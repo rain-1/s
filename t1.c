@@ -4,6 +4,8 @@
 #include "tokenizer.h"
 
 void main(void) {
-	token();
-	printf("%c\n", getchar());
+	printf("%d\n", token(stdin));
+	printf("%s\n", tok_buf);
+	printf("%d\n", token(stdin));
+	printf("%s\n", tok_buf);
 }
