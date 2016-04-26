@@ -16,10 +16,25 @@ int fpeek(FILE *stream)
 	return c;
 }
 
+int ws_or_nl(int chr)
+{
+	return chr == ' ' || chr == '\t' || chr == '\n';
+}
+
 void skip_spaces(FILE *stream)
 {
-	while (!feof(stream) && fpeek(stream) == ' ')
+	while (!feof(stream) && (fpeek(stream) == ' ' || fpeek(stream) == '\t'))
 		fgetc(stream);
+}
+
+void skip_newline(FILE *stream)
+{
+	skip_spaces(stream);
+	if (fpeek(stream) == '\n')
+		fgetc(stream);
+	else
+		return;
+	skip_spaces(stream);
 }
 
 int token(FILE *stream)
@@ -28,7 +43,7 @@ int token(FILE *stream)
 	int l;
 	
 	skip_spaces(stream);
-	if (feof(stream))
+	if (feof(stream) || fpeek(stream) == '\n')
 		return -1;
 
 	l = 0;
@@ -38,7 +53,7 @@ int token(FILE *stream)
 	// WARNING: fpeek must be done before feof
 	//          otherwise it may not succeed
 	//
-	while (l < TOK_MAX-1 && fpeek(stream) != ' ' && !feof(stream)) {
+	while (l < TOK_MAX-1 && !ws_or_nl(fpeek(stream)) && !feof(stream)) {
 		buf[l] = fgetc(stream);
 		l++;
 	}
