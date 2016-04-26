@@ -3,9 +3,11 @@
 
 #include "tokenizer.h"
 
-void main(void) {
+int main(void) {
 	printf("%d\n", token(stdin));
 	printf("%s\n", tok_buf);
 	printf("%d\n", token(stdin));
 	printf("%s\n", tok_buf);
+
+	return 0;
 }

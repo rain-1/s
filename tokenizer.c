@@ -28,6 +28,8 @@ int token(FILE *stream)
 	int l;
 	
 	skip_spaces(stream);
+	if (feof(stream))
+		return -1;
 
 	l = 0;
 	buf = tok_buf;
@@ -37,7 +39,6 @@ int token(FILE *stream)
 	//          otherwise it may not succeed
 	//
 	while (l < TOK_MAX-1 && fpeek(stream) != ' ' && !feof(stream)) {
-		printf("<%c/%d/%d>\n", fpeek(stream), fpeek(stream), !feof(stream));
 		buf[l] = fgetc(stream);
 		l++;
 	}
