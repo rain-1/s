@@ -1,0 +1,21 @@
+TOKENS
+
+[ ] space separates tokens
+[\] backslash escapes [ \#]
+[#] is a comment char
+everything else is part of a token
+
+further: \| \|| and \& are treated specially,
+they are interpreted as text rather than operators
+
+
+SYNTAX
+
+# line comment
+
+
+OPERATORS
+
+pipe |
+or ||
+par &
