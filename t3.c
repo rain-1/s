@@ -12,8 +12,14 @@ int main(int argc, char **argv, char **envp) {
         int i = 0;
 	tokens = malloc(sizeof(char*)*420);
 	
-	//FILE *f = fopen(argv[1], "r");
-	FILE *f = stdin;
+	FILE *f;
+	
+	if (argc == 1)
+		f = stdin;
+	else {
+		printf("opening %s\n", argv[1]);
+		f = fopen(argv[1], "r");
+	}
 
 	do {
 		i = 0;
@@ -23,13 +29,19 @@ int main(int argc, char **argv, char **envp) {
 			// allocate space and copy them into the array
 			tokens[i] = malloc(t+1);
 			memcpy(tokens[i], tok_buf, t+1);
+			//printf("[%s:%d]\n", tokens[i], t);
 			i++;
 		}
 		tokens[i] = NULL;
 
+		if (i == 0)
+			continue;
+
 		// fork off a child process
-		if (!fork())
+		if (!fork()) {
 			execvpe(tokens[0], tokens, envp);
+			puts("!!!!!!! GOT PAST EXECVE !!!!!!");
+		}
 		// wait for it to finish
 		int status;
 		while (wait(&status) > -1);
@@ -41,8 +53,8 @@ int main(int argc, char **argv, char **envp) {
 		}
 		//puts("");
 
-		skip_newline(stdin);
-	} while(!feof(stdin));
+		skip_newline(f);
+	} while(!feof(f));
 
 	return 0;
 }

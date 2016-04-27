@@ -16,9 +16,9 @@ int fpeek(FILE *stream)
 	return c;
 }
 
-int ws_or_nl(int chr)
+int token_end(int chr)
 {
-	return chr == ' ' || chr == '\t' || chr == '\n';
+	return chr == ' ' || chr == '\t' || chr == '\n' || chr == '#';
 }
 
 void skip_spaces(FILE *stream)
@@ -37,6 +37,11 @@ void skip_newline(FILE *stream)
 	skip_spaces(stream);
 }
 
+void skip_comment(FILE *stream)
+{
+	while (!feof(stream) && fgetc(stream) != '\n');
+}
+
 int token(FILE *stream)
 {
 	char *buf;
@@ -53,11 +58,17 @@ int token(FILE *stream)
 	// WARNING: fpeek must be done before feof
 	//          otherwise it may not succeed
 	//
-	while (l < TOK_MAX-1 && !ws_or_nl(fpeek(stream)) && !feof(stream)) {
+	while (l < TOK_MAX-1 && !token_end(fpeek(stream)) && !feof(stream)) {
 		buf[l] = fgetc(stream);
 		l++;
 	}
 	buf[l] = '\0';
+
+	if (fpeek(stream) == '#')
+		skip_comment(stream);
+
+	if (!l)
+		return -1;
 
 	return l;
 }

@@ -4,5 +4,6 @@ extern char tok_buf[TOK_MAX];
 
 void skip_spaces(FILE *stream);
 void skip_newline(FILE *stream);
+void skip_comment(FILE *stream);
 int token(FILE *stream);
 
