@@ -11,6 +11,9 @@ int main(int argc, char **argv, char **envp) {
 	int i;
 	FILE *f;
 
+	int status;
+	pid_t p;
+
 	if (argc == 1)
 		f = stdin;
 	else {
@@ -20,11 +23,13 @@ int main(int argc, char **argv, char **envp) {
 
 	do {
 		n = parse(f);
-		if (!fork()) {
+		if (!(p = fork())) {
 			interpret(envp, n);
 			puts("== SHOULD NEVER GET HERE ==");
+			return -1;
 		}
 		free_ast(n);
+		waitpid(p, &status, 0);
 
 		skip_newline(f);
 	} while(!feof(f));
