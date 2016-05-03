@@ -1,14 +1,14 @@
 CC=gcc
 CFLAGS=-std=c99 -Wall -Werror
 
-SOURCES=tokenizer.c parser.c
+SOURCES=tokenizer.c parser.c interpreter.c
 OBJECTS=$(SOURCES:.c=.o)
 
-all: t1 t2 t3 t4 t5
+all: t1 t2 t3 t4 t5 t6
 
 clean:
 	rm -f *.o
-	rm -f t1 t2 t3 t4 t5
+	rm -f t1 t2 t3 t4 t5 t6
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
@@ -27,3 +27,6 @@ t4: $(OBJECTS) t4.c
 
 t5: $(OBJECTS) t5.c
 	gcc -o t5 $(OBJECTS) t5.c
+
+t6: $(OBJECTS) t6.c
+	gcc -o t6 $(OBJECTS) t6.c

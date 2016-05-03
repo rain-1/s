@@ -36,7 +36,7 @@ struct AST* parse_pipe(char **tokens)
 	struct AST* m;
 
 	n = malloc(sizeof(struct AST));
-	n->type = NODE_TOKENS;
+	n->type = NODE_COMMAND;
 	n->node.tokens = tokens;
 
 	while (tokens[0]) {

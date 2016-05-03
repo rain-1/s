@@ -10,8 +10,8 @@ void display_ast(struct AST* n)
 	char **t;
 
 	switch(n->type) {
-	case NODE_TOKENS:
-		puts("NODE TOKENS");
+	case NODE_COMMAND:
+		puts("NODE COMMAND");
 		t = n->node.tokens;
 		while (*t) {
 			printf("%s ", *t);
