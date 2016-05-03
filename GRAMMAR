@@ -1,0 +1,24 @@
+# GRAMMAR
+
+<command> ::= <token>+
+
+<pipe> ::= <command> '|' <pipe>
+         | <command>
+
+<conj> ::= <pipe> '&&' <conj>
+         | <pipe>
+
+<disj> ::= <conj> '||' <disj>
+         | <conj>
+
+<line> ::= <disj> ('<' <token>)? ('>' <token>)? '&'?
+
+or in words:
+
+A command is a sequence of tokens like: grep -v foo
+A pipe is a sequence of commands with | between: ps aux | grep watch | grep -v grep
+A disj is a sequence of pipes with || in between, like:  mount /proc || exit -1
+note: | binds tighter than && which binds tighter than ||
+And each line can optionally be set to run in the background/in parallel using &
+you can also (optionally) choose to redirect stdin/out
+
