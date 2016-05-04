@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-std=c99 -Wall -Werror
 
-SOURCES=tokenizer.c parser.c interpreter.c
+SOURCES=tokenizer.c parser.c interpreter.c variables.c
 OBJECTS=$(SOURCES:.c=.o)
 
 all: t1 t2 t3 t4 t5 t6

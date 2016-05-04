@@ -46,7 +46,7 @@ int main(int argc, char **argv, char **envp) {
 	}
 
 	do {
-		n = parse(f);
+		n = parse(f, envp);
 		display_ast(n);
 
 		skip_newline(f);

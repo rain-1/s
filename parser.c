@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "tokenizer.h"
+#include "variables.h"
 #include "parser.h"
 
 void free_ast(struct AST *n)
@@ -20,8 +21,9 @@ char** read_tokens(FILE *f, char **envp)
 	tokens = malloc(sizeof(char*)*MAX_TOKS_PER_LINE);
 
 	while ((t = token(f)) != -1) {
-		tokens[i] = malloc(t+1);
-		memcpy(tokens[i], tok_buf, t+1);
+		// TODO: check for expansion fail undefined variable
+		tokens[i] = expand_variables(tok_buf, t, envp);
+
 		i++;
 		if (i >= MAX_TOKS_PER_LINE) {
 			fprintf(stderr, "Line too long!\n");
