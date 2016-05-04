@@ -6,7 +6,14 @@
 #include "parser.h"
 #include "interpreter.h"
 
-int main(int argc, char **argv, char **envp) {
+void prompt()
+{
+	printf("%s", geteuid() == 0 ? "s# " : "s$ ");
+	fflush(stdout);
+}
+
+int main(int argc, char **argv, char **envp)
+{
 	struct AST* n;
 	int i;
 	FILE *f;
@@ -25,6 +32,7 @@ int main(int argc, char **argv, char **envp) {
 		}
 	}
 
+	prompt();
 	do {
 		n = parse(f, envp);
 		if (!(p = fork())) {
@@ -34,6 +42,8 @@ int main(int argc, char **argv, char **envp) {
 		}
 		free_ast(n);
 		waitpid(p, &status, 0);
+
+		prompt();
 
 		skip_newline(f);
 	} while(!feof(f));
