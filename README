@@ -1,0 +1,25 @@
+Anti-example:
+$ env | grep -E '^V='
+$ V="x" echo $V
+
+$ V="x"; echo $V
+x
+$ env | grep -E '^V='
+$ V="y" env | grep -E '^V='
+V=y
+$ V="y" echo $V
+x
+
+# ANTI-FEATURES
+
+## expansion
+
+In normal shells:
+
+$ X="a b" ; ls $X
+ls: a: No such file or directory
+ls: b: No such file or directory
+$ X="a b" ; ls "$X"
+ls: a b: No such file or directory
+
+In our shell, one lexical token stays one lexical token.

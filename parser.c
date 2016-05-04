@@ -10,7 +10,7 @@ void free_ast(struct AST *n)
 	// TODO
 }
 
-char** read_tokens(FILE *f)
+char** read_tokens(FILE *f, char **envp)
 {
 	char **tokens;
 	int i, t;
@@ -93,7 +93,7 @@ struct AST* parse_tokens(char **tokens)
 	return parse_binop(tokens, NODE_DISJ);
 }
 
-struct AST* parse(FILE *f)
+struct AST* parse(FILE *f, char **envp)
 {
-	return parse_tokens(read_tokens(f));
+	return parse_tokens(read_tokens(f, envp));
 }

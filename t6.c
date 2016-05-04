@@ -28,7 +28,7 @@ int main(int argc, char **argv, char **envp) {
 	do {
 		n = parse(f);
 		if (!(p = fork())) {
-			interpret(envp, n);
+			interpret(n, envp);
 			puts("== SHOULD NEVER GET HERE ==");
 			return -1;
 		}

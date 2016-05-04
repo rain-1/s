@@ -7,20 +7,20 @@
 #include "parser.h"
 #include "interpreter.h"
 
-void interpret_command(char **envp, struct AST* n)
+void interpret_command(struct AST* n, char **envp)
 {
 	assert(n->type == NODE_COMMAND);
 
 	execvpe(n->node.tokens[0], n->node.tokens, envp);
 }
 
-void interpret_junction(char **envp, struct AST* n)
+void interpret_junction(struct AST* n, char **envp)
 {
 	pid_t p;
 	int r;
 
 	if (n->type == NODE_COMMAND) {
-		interpret_command(envp, n);
+		interpret_command(n, envp);
 	}
 
 	switch(p = fork()) {
@@ -28,7 +28,7 @@ void interpret_junction(char **envp, struct AST* n)
 		fprintf(stderr, "fork() failure");
 		break;
 	case 0:
-		interpret(envp, n->node.child.l);
+		interpret(n->node.child.l, envp);
 		break;
 	default:
 		waitpid(p, &r, 0);
@@ -44,16 +44,16 @@ void interpret_junction(char **envp, struct AST* n)
 		if ((!WEXITSTATUS(r)) ^ (n->type == NODE_CONJ)) {
 			exit(WEXITSTATUS(r));
 		} else {
-			interpret(envp, n->node.child.r);
+			interpret(n->node.child.r, envp);
 		}
 		break;
 	}
 }
 
-void interpret_pipe(char **envp, struct AST* n)
+void interpret_pipe(struct AST* n, char **envp)
 {
 	if (n->type == NODE_COMMAND) {
-		interpret_command(envp, n);
+		interpret_command(n, envp);
 	}
 
 	int fd[2];
@@ -70,28 +70,28 @@ void interpret_pipe(char **envp, struct AST* n)
 		close(STDOUT_FILENO);
 		dup(fd[1]);
 		close(fd[1]);
-		interpret_command(envp, n->node.child.l);
+		interpret_command(n->node.child.l, envp);
 	} else {	     // parent
 		close(fd[1]);
 		close(STDIN_FILENO);
 		dup(fd[0]);
 		close(fd[0]);
-		interpret_pipe(envp, n->node.child.r);
+		interpret_pipe(n->node.child.r, envp);
 	}
 }
 
-void interpret(char **envp, struct AST* n)
+void interpret(struct AST* n, char **envp)
 {
 	switch(n->type) {
 	case NODE_COMMAND:
-		interpret_command(envp, n);
+		interpret_command(n, envp);
 		break;
 	case NODE_CONJ:
 	case NODE_DISJ:
-		interpret_junction(envp, n);
+		interpret_junction(n, envp);
 		break;
 	case NODE_PIPE:
-		interpret_pipe(envp, n);
+		interpret_pipe(n, envp);
 		break;
 	}
 }

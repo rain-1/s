@@ -22,7 +22,7 @@ void free_ast(struct AST *);
 
 char *operator_for(NodeType ty);
 
-char** read_tokens(FILE *f);
+char** read_tokens(FILE *f, char **envp);
 struct AST* parse_tokens(char **tokens);
 
-struct AST* parse(FILE *f);
+struct AST* parse(FILE *f, char **envp);
