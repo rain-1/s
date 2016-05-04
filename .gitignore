@@ -1,2 +1,11 @@
-*.o
+test_commands
 *~
+*.o
+t1
+t2
+t3
+t4
+t5
+t6
+*.core
+test_commands
