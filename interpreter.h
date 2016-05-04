@@ -1,4 +1,4 @@
-void interpret(char **envp, struct AST* n);
+void interpret(struct AST* n, char **envp);
 
 
 
