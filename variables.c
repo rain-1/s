@@ -23,18 +23,18 @@ char *expand_variables(char *tok, int t, char **envp)
 	while (*tok) {
 		if (*tok == '$') {
 			if (!(tok = read_variable_prefix(tok))) {
-				fprintf(stderr, "Error parsing variable inside token [%s] at character [%d]", stok, i);
+				fprintf(stderr, "Error parsing variable inside token [%s] at character [%d]\n", stok, i);
 				exit(-1);
 			}
 
 			if (!(val = getenv(variable_name))) {
-				fprintf(stderr, "Error parsing variable inside token [%s] at character [%d]", stok, i);
+				fprintf(stderr, "Reference to an undefined variable inside token [%s] at character [%d]\n", stok, i);
 				exit(-1);
 			}
 
 			l = strlen(val);
 			alloc_len += l;
-			realloc(o, alloc_len);
+			o = realloc(o, alloc_len);
 			memcpy(o + i, val, l);
 			i += l;
 		}
@@ -60,10 +60,25 @@ char *read_variable_prefix(char *tok)
 	assert(*tok == '$');
 	tok++;
 
+	// NOTE: We don't bother to bounds check here
+	// because tok is already <= the size of a token
+	//
+	// ...lets see if this ever bites?
+
 	i = 0;
-	// TODO: bounds checking
-	while (variable_character(*tok))
-		variable_name[i++] = *tok++;
+	if (*tok == '{') {
+		tok++;
+		while (variable_character(*tok)) {
+
+			variable_name[i++] = *tok++;
+		}
+		if (*tok++ != '}') {
+			return NULL;
+		}
+	}
+	else
+		while (variable_character(*tok))
+			variable_name[i++] = *tok++;
 	variable_name[i] = '\0';
 
 	if (!i)
