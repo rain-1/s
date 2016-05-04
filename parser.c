@@ -6,6 +6,12 @@
 #include "variables.h"
 #include "parser.h"
 
+char *operator_for[] = {
+	[NODE_PIPE] = "|",
+	[NODE_CONJ] = "&&",
+	[NODE_DISJ] = "||",
+};
+
 void free_ast(struct AST *n)
 {
 	// TODO
@@ -21,7 +27,6 @@ char** read_tokens(FILE *f, char **envp)
 	tokens = malloc(sizeof(char*)*MAX_TOKS_PER_LINE);
 
 	while ((t = token(f)) != -1) {
-		// TODO: check for expansion fail undefined variable
 		tokens[i] = expand_variables(tok_buf, t, envp);
 
 		i++;
@@ -36,23 +41,6 @@ char** read_tokens(FILE *f, char **envp)
 	return tokens;
 }
 
-char *operator_for(NodeType ty)
-{
-	// TODO: rewrite this using array lookup?
-
-	switch(ty) {
-	case NODE_PIPE:
-		return "|";
-	case NODE_CONJ:
-		return "&&";
-	case NODE_DISJ:
-		return "||";
-	default:
-		fprintf(stderr, "ERROR: operator_for(%d) called\n", ty);
-		exit(-1);
-		return NULL;
-	}
-}
 
 struct AST* parse_binop(char **tokens, NodeType ty)
 {
@@ -71,7 +59,7 @@ struct AST* parse_binop(char **tokens, NodeType ty)
 	}
 
 	while (tokens[0]) {
-		if (!strcmp(operator_for(ty), tokens[0])) {
+		if (!strcmp(operator_for[ty], tokens[0])) {
 			free(tokens[0]);
 			tokens[0] = NULL;
 

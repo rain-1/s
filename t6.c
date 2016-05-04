@@ -6,10 +6,14 @@
 #include "parser.h"
 #include "interpreter.h"
 
+int display_prompt;
+
 void prompt()
 {
-	printf("%s", geteuid() == 0 ? "s# " : "s$ ");
-	fflush(stdout);
+	if (display_prompt) {
+		printf("%s", geteuid() == 0 ? "s# " : "s$ ");
+		fflush(stdout);
+	}
 }
 
 int main(int argc, char **argv, char **envp)
@@ -21,15 +25,19 @@ int main(int argc, char **argv, char **envp)
 	int status;
 	pid_t p;
 
-	if (argc == 1)
+	if (argc == 1) {
 		f = stdin;
+
+		display_prompt = isatty(fileno(stdin));
+	}
 	else {
-		printf("opening %s\n", argv[1]);
 		f = fopen(argv[1], "r");
 		if (!f) {
 			fprintf(stderr, "Could not open file <%s>!", argv[1]);
 			exit(-1);
 		}
+
+		display_prompt = 0;
 	}
 
 	prompt();

@@ -18,9 +18,9 @@ struct AST {
 	} node;
 };
 
-void free_ast(struct AST *);
+extern char *operator_for[];
 
-char *operator_for(NodeType ty);
+void free_ast(struct AST *);
 
 char** read_tokens(FILE *f, char **envp);
 struct AST* parse_tokens(char **tokens);
