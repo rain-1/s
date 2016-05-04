@@ -2,9 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h>
 
 #include "parser.h"
 #include "interpreter.h"
+
+char cwd[PATH_MAX];
 
 int display_prompt;
 
@@ -43,13 +46,28 @@ int main(int argc, char **argv, char **envp)
 	prompt();
 	do {
 		n = parse(f, envp);
-		if (!(p = fork())) {
-			interpret(n, envp);
-			puts("== SHOULD NEVER GET HERE ==");
-			return -1;
+
+		if (n->type == NODE_COMMAND && n->node.tokens[0] && !strncmp(n->node.tokens[0], "cd", 2)) {
+			// TODO if [1] is NULL go to $HOME instead
+
+			if (chdir(n->node.tokens[1])) {
+				fprintf(stderr, "Error: Could not change directory to [%s]\n", n->node.tokens[1]);
+			}
+			else {
+				getcwd(cwd, PATH_MAX);
+				setenv("PWD", cwd, 1);
+			}
 		}
+		else {
+			if (!(p = fork())) {
+				interpret(n, envp);
+				puts("== SHOULD NEVER GET HERE ==");
+				return -1;
+			}
+			waitpid(p, &status, 0);
+		}
+
 		free_ast(n);
-		waitpid(p, &status, 0);
 
 		prompt(); // TODO: why does this have to be before skip newline?
 		skip_newline(f);

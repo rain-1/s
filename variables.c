@@ -64,6 +64,7 @@ char *read_variable_prefix(char *tok)
 	//
 	// ...lets see if this ever bites?
 
+	bracket = 0;
 	if (*tok == '{') {
 		bracket = 1;
 		tok++;
