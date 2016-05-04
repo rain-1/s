@@ -23,6 +23,10 @@ char** read_tokens(FILE *f)
 		tokens[i] = malloc(t+1);
 		memcpy(tokens[i], tok_buf, t+1);
 		i++;
+		if (i >= MAX_TOKS_PER_LINE) {
+			fprintf(stderr, "Line too long!\n");
+			exit(-1);
+		}
 	}
 
 	tokens[i] = NULL;

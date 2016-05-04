@@ -19,6 +19,10 @@ int main(int argc, char **argv, char **envp) {
 	else {
 		printf("opening %s\n", argv[1]);
 		f = fopen(argv[1], "r");
+		if (!f) {
+			fprintf(stderr, "Could not open file <%s>!", argv[1]);
+			exit(-1);
+		}
 	}
 
 	do {
