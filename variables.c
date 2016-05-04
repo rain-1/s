@@ -19,7 +19,6 @@ char *expand_variables(char *tok, int t, char **envp)
 	o = malloc(alloc_len);
 
 	i = 0;
-	// TODO bounds
 	while (*tok) {
 		if (*tok == '$') {
 			if (!(tok = read_variable_prefix(tok))) {
@@ -54,8 +53,8 @@ int variable_character(char c)
 
 char *read_variable_prefix(char *tok)
 {
-	// TODO: verify that the first letter is not a digit?
 	int i;
+	int bracket;
 
 	assert(*tok == '$');
 	tok++;
@@ -65,20 +64,24 @@ char *read_variable_prefix(char *tok)
 	//
 	// ...lets see if this ever bites?
 
-	i = 0;
 	if (*tok == '{') {
+		bracket = 1;
 		tok++;
-		while (variable_character(*tok)) {
+	}
 
-			variable_name[i++] = *tok++;
-		}
-		if (*tok++ != '}') {
+	i = 0;
+	while (variable_character(*tok)) {
+		if (i == 0 && ('0' <= *tok && *tok <= '9')) {
+			// TODO nice error message
 			return NULL;
 		}
+		variable_name[i++] = *tok++;
 	}
-	else
-		while (variable_character(*tok))
-			variable_name[i++] = *tok++;
+
+	if (bracket && *tok++ != '}') {
+		return NULL;
+	}
+
 	variable_name[i] = '\0';
 
 	if (!i)

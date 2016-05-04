@@ -51,8 +51,7 @@ int main(int argc, char **argv, char **envp)
 		free_ast(n);
 		waitpid(p, &status, 0);
 
-		prompt();
-
+		prompt(); // TODO: why does this have to be before skip newline?
 		skip_newline(f);
 	} while(!feof(f));
 
