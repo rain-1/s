@@ -53,14 +53,16 @@ int token(FILE *stream)
 
 	l = 0;
 	buf = tok_buf;
-	// TODO verify this is well bounded
-	//
 	// WARNING: fpeek must be done before feof
 	//          otherwise it may not succeed
 	//
-	while (l < TOK_MAX-1 && !token_end(fpeek(stream)) && !feof(stream)) {
+	while (!token_end(fpeek(stream)) && !feof(stream)) {
 		buf[l] = fgetc(stream);
 		l++;
+		if (l >= TOK_MAX-1) {
+			fprintf(stderr, "Token too long!");
+			exit(-1);
+		}
 	}
 	buf[l] = '\0';
 
