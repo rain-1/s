@@ -22,3 +22,9 @@ note: | binds tighter than && which binds tighter than ||
 And each line can optionally be set to run in the background/in parallel using &
 you can also (optionally) choose to redirect stdin/out
 
+# AST
+
+So the abstract syntax tree ends up being a right associative tree of '||' nodes,
+containing right associative trees of '&&' nodes, containing ... '|' nodes which
+contain command nodes.
+

@@ -32,6 +32,8 @@ char** read_tokens(FILE *f)
 
 char *operator_for(NodeType ty)
 {
+	// TODO: rewrite this using array lookup?
+
 	switch(ty) {
 	case NODE_PIPE:
 		return "|";
