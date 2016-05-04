@@ -30,24 +30,47 @@ char** read_tokens(FILE *f)
 	return tokens;
 }
 
-struct AST* parse_pipe(char **tokens)
+char *operator_for(NodeType ty)
 {
+	switch(ty) {
+	case NODE_PIPE:
+		return "|";
+	case NODE_CONJ:
+		return "&&";
+	case NODE_DISJ:
+		return "||";
+	default:
+		fprintf(stderr, "ERROR: operator_for(%d) called\n", ty);
+		exit(-1);
+		return NULL;
+	}
+}
+
+struct AST* parse_binop(char **tokens, NodeType ty)
+{
+	char **stokens;
 	struct AST* n;
 	struct AST* m;
 
-	n = malloc(sizeof(struct AST));
-	n->type = NODE_COMMAND;
-	n->node.tokens = tokens;
+	stokens = tokens;
+
+	if (ty == NODE_COMMAND) {
+		n = malloc(sizeof(struct AST));
+		n->type = NODE_COMMAND;
+		n->node.tokens = stokens;
+
+		return n;
+	}
 
 	while (tokens[0]) {
-		if (!strcmp("|", tokens[0])) {
+		if (!strcmp(operator_for(ty), tokens[0])) {
 			free(tokens[0]);
 			tokens[0] = NULL;
 
 			m = malloc(sizeof(struct AST));
-			m->type = NODE_PIPE;
-			m->node.child.l = n;
-			m->node.child.r = parse_pipe(tokens+1);
+			m->type = ty;
+			m->node.child.l = parse_binop(stokens, ty-1);
+			m->node.child.r = parse_binop(tokens+1, ty);
 
 			return m;
 		}
@@ -56,12 +79,12 @@ struct AST* parse_pipe(char **tokens)
 		}
 	}
 
-	return n;
+	return parse_binop(stokens, ty-1);
 }
 
 struct AST* parse_tokens(char **tokens)
 {
-	return parse_pipe(tokens);
+	return parse_binop(tokens, NODE_DISJ);
 }
 
 struct AST* parse(FILE *f)

@@ -20,8 +20,8 @@ void display_ast(struct AST* n)
 		puts("");
 
 		break;
-	case NODE_PIPE:
-		puts("NODE PIPE");
+	default:
+		printf("NODE %s", operator_for(n->type));
 		puts("LEFT:");
 		display_ast(n->node.child.l);
 		puts("RIGHT:");

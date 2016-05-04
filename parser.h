@@ -1,8 +1,10 @@
 #define MAX_TOKS_PER_LINE 4096
 
 typedef enum {
-	NODE_COMMAND,
-	NODE_PIPE
+	NODE_COMMAND = 0,
+	NODE_PIPE = 1,
+	NODE_CONJ = 2,
+	NODE_DISJ = 3,
 } NodeType;
 
 struct AST {
@@ -17,6 +19,8 @@ struct AST {
 };
 
 void free_ast(struct AST *);
+
+char *operator_for(NodeType ty);
 
 char** read_tokens(FILE *f);
 struct AST* parse_tokens(char **tokens);
