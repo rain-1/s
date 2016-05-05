@@ -1,0 +1,46 @@
+.Dd May 05, 2016
+.Dt S 1
+.Os
+.Sh NAME
+.Nm s
+.Nd command line interpreter
+.Sh SYNOPSIS
+.Nm
+.Op Ar script
+.Sh DESCRIPTION
+.Nm s
+has two main modes of operation: interactive shell and batch script processor.
+
+If the command line argument
+.Ar script
+is provided it will execute that file. This also allows you to use
+.Nm s
+as the shebang line in an executable. Alternatively you can provide commands via stdin.
+
+Otherwise if you start
+.Nm s
+in a terminal you will be given an interactive shell prompt like this:
+.Bd -literal
+	s$ echo hello world!
+	hello world!
+.Ed
+.Pp
+.Sh SYNTAX
+The lexical syntax of the shell language is very strictly tokenized based on spaces.
+
+The
+.Em #
+character starts a comment until the end of the line.
+
+A token always stays a single token there is no globs or bash style expansion. You will need to master xargs to use this shell.
+.Sh GRAMMAR
+The grammar is line based. Sequences of tokens are treated as commands and the operators
+.Em "|"
+,
+.Em &&
+and
+.Em ||
+are parsed in order of tightest binding first.
+.Sh BUILTINS
+.Nm cd
+.Op Ar directory
