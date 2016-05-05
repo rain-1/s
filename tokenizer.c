@@ -34,7 +34,6 @@ void skip_newline(FILE *stream)
 		fgetc(stream);
 	else
 		return;
-	skip_spaces(stream);
 }
 
 void skip_comment(FILE *stream)

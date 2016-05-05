@@ -40,8 +40,9 @@ int main(int argc, char **argv, char **envp)
 		display_prompt = 0;
 	}
 
-	prompt();
+
 	do {
+		prompt();
 		n = parse(f, envp);
 
 		if (!perform_builtin(n)) {
@@ -55,7 +56,6 @@ int main(int argc, char **argv, char **envp)
 
 		free_ast(n);
 
-		prompt(); // TODO: why does this have to be before skip newline?
 		skip_newline(f);
 	} while(!feof(f));
 
