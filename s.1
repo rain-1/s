@@ -41,6 +41,16 @@ The grammar is line based. Sequences of tokens are treated as commands and the o
 and
 .Em ||
 are parsed in order of tightest binding first.
+
+At the end of a line you can specify input, output redirection
+.Em <
+.Op Ar input
+.Em >
+.Op Ar output
+and whether the job should be run in the background with
+.Em &
+They must be provided in that order.
+
 .Sh BUILTINS
 .Nm cd
 .Op Ar directory
