@@ -39,3 +39,8 @@ The names of variables are made from these charactors: [A-Z0-9_]
 * http://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap08.html
 
 The syntax is $VAR or ${VAR}. The reason we have ${VAR} is to allow things like ${FOO}BAR.
+
+# SYNTAX
+
+builtins
+'cd' <directory>

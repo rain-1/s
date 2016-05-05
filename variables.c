@@ -7,6 +7,7 @@
 #include "variables.h"
 
 char variable_name[TOK_MAX];
+char *read_var_error;
 
 char *expand_variables(char *tok, int t, char **envp)
 {
@@ -22,7 +23,7 @@ char *expand_variables(char *tok, int t, char **envp)
 	while (*tok) {
 		if (*tok == '$') {
 			if (!(tok = read_variable_prefix(tok))) {
-				fprintf(stderr, "Error parsing variable inside token [%s] at character [%d]\n", stok, i);
+				fprintf(stderr, "Error parsing variable inside token [%s] at character [%d]. %s.\n", stok, i, read_var_error);
 				exit(-1);
 			}
 
@@ -73,20 +74,23 @@ char *read_variable_prefix(char *tok)
 	i = 0;
 	while (variable_character(*tok)) {
 		if (i == 0 && ('0' <= *tok && *tok <= '9')) {
-			// TODO nice error message
+			read_var_error = "var must not start with a digit";
 			return NULL;
 		}
 		variable_name[i++] = *tok++;
 	}
 
 	if (bracket && *tok++ != '}') {
+		read_var_error = "missing '}'";
 		return NULL;
 	}
 
 	variable_name[i] = '\0';
 
-	if (!i)
+	if (!i) {
+		read_var_error = "length 0 variable";
 		return NULL;
+	}
 	
 	return tok;
 }

@@ -12,9 +12,35 @@ char *operator_for[] = {
 	[NODE_DISJ] = "||",
 };
 
+void free_ast_commands(char **r)
+{
+	while(*r) {
+		free(*r);
+		r++;
+	}
+}
+
+char** free_ast_loop(struct AST *n)
+{
+	char **r;
+
+	if (n->type == NODE_COMMAND) {
+		r = n->node.tokens;
+		free_ast_commands(r);
+		free(n);
+		return r;
+	}
+	else {
+		free_ast_loop(n->node.child.r);
+		r=free_ast_loop(n->node.child.l);
+		free(n);
+		return r;
+	}
+}
+
 void free_ast(struct AST *n)
 {
-	// TODO
+	free(free_ast_loop(n));
 }
 
 char** read_tokens(FILE *f, char **envp)

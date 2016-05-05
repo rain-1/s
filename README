@@ -23,3 +23,4 @@ $ X="a b" ; ls "$X"
 ls: a b: No such file or directory
 
 In our shell, one lexical token stays one lexical token.
+In our shell, we exit on undefined variables
