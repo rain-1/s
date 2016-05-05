@@ -35,7 +35,7 @@ void display_ast(struct AST* n)
 
 int main(int argc, char **argv, char **envp) {
 	struct AST* n;
-	int i;
+	int i, b;
 	FILE *f;
 
 	if (argc == 1)
@@ -46,7 +46,7 @@ int main(int argc, char **argv, char **envp) {
 	}
 
 	do {
-		n = parse(f, envp);
+		n = parse(f, &b, envp);
 		display_ast(n);
 
 		skip_newline(f);

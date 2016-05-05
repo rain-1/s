@@ -19,7 +19,7 @@ void prompt()
 int main(int argc, char **argv, char **envp)
 {
 	struct AST* n;
-	int i;
+	int i, b;
 	FILE *f;
 
 	int status;
@@ -43,7 +43,7 @@ int main(int argc, char **argv, char **envp)
 
 	do {
 		prompt();
-		n = parse(f, envp);
+		n = parse(f, &b, envp);
 
 		if (!perform_builtin(n)) {
 			if (!(p = fork())) {
@@ -51,7 +51,10 @@ int main(int argc, char **argv, char **envp)
 				puts("== SHOULD NEVER GET HERE ==");
 				return -1;
 			}
-			waitpid(p, &status, 0);
+
+			if (!b) {
+				waitpid(p, &status, 0);
+			}
 		}
 
 		free_ast(n);

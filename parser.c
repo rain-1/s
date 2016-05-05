@@ -104,12 +104,25 @@ struct AST* parse_binop(char **tokens, NodeType ty)
 	return parse_binop(stokens, ty-1);
 }
 
-struct AST* parse_tokens(char **tokens)
+struct AST* parse_tokens(char **tokens, int *bg_flag)
 {
+	int i = 0;
+
+	while (tokens[i])
+		i++;
+        if (i > 0 && !strcmp("&", tokens[i-1])) {
+		*bg_flag=1;
+		free(tokens[i-1]);
+		tokens[i-1] = NULL;
+	}
+	else {
+		*bg_flag=0;
+	}
+
 	return parse_binop(tokens, NODE_DISJ);
 }
 
-struct AST* parse(FILE *f, char **envp)
+struct AST* parse(FILE *f, int *bg_flag, char **envp)
 {
-	return parse_tokens(read_tokens(f, envp));
+	return parse_tokens(read_tokens(f, envp), bg_flag);
 }
