@@ -12,6 +12,9 @@ void interpret_command(struct AST* n, char **envp)
 	assert(n->type == NODE_COMMAND);
 
 	execvpe(n->node.tokens[0], n->node.tokens, envp);
+
+	fprintf(stderr, "Error: Could not execute the program named [%s]\n", n->node.tokens[0]);
+	exit(-1);
 }
 
 void interpret_junction(struct AST* n, char **envp)

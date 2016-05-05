@@ -1,13 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <limits.h>
 
 #include "parser.h"
 #include "interpreter.h"
-
-char cwd[PATH_MAX];
+#include "builtins.h"
 
 int display_prompt;
 
@@ -47,18 +44,7 @@ int main(int argc, char **argv, char **envp)
 	do {
 		n = parse(f, envp);
 
-		if (n->type == NODE_COMMAND && n->node.tokens[0] && !strncmp(n->node.tokens[0], "cd", 2)) {
-			// TODO if [1] is NULL go to $HOME instead
-
-			if (chdir(n->node.tokens[1])) {
-				fprintf(stderr, "Error: Could not change directory to [%s]\n", n->node.tokens[1]);
-			}
-			else {
-				getcwd(cwd, PATH_MAX);
-				setenv("PWD", cwd, 1);
-			}
-		}
-		else {
+		if (!perform_builtin(n)) {
 			if (!(p = fork())) {
 				interpret(n, envp);
 				puts("== SHOULD NEVER GET HERE ==");
