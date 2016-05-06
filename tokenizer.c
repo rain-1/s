@@ -44,6 +44,8 @@ void skip_comment(FILE *stream)
 
 int token(FILE *stream)
 {
+	// TODO strings
+
 	char *buf;
 	int l;
 	

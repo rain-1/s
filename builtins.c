@@ -13,9 +13,12 @@ char cwd[PATH_MAX];
 int perform_builtin(struct AST *n)
 {
 	if (n->type == NODE_COMMAND && n->node.tokens[0]) {
-		if (!strcmp("cd", n->node.tokens[0])) builtin_cd(n->node.tokens);
-		else if (!strcmp("set", n->node.tokens[0])) builtin_set(n->node.tokens);
-		else if (!strcmp("unset", n->node.tokens[0])) builtin_unset(n->node.tokens);
+		if (!strcmp("cd", n->node.tokens[0]))
+			builtin_cd(n->node.tokens);
+		else if (!strcmp("set", n->node.tokens[0]))
+			builtin_set(n->node.tokens);
+		else if (!strcmp("unset", n->node.tokens[0]))
+			builtin_unset(n->node.tokens);
 		else return 0;
 
 		return 1;

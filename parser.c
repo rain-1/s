@@ -52,7 +52,7 @@ struct AST* parse_binop(char **tokens, NodeType ty)
 
 	if (ty == NODE_COMMAND) {
 		if (!tokens[0]) {
-			fprintf(stderr, "Error: zero-length command\n");
+			fprintf(stderr, "Error: bad syntax, zero-length command\n");
 			exit(-1);
 		}
 		n = malloc(sizeof(struct AST));
@@ -88,6 +88,7 @@ struct AST* parse_tokens(char **tokens, int *bg_flag)
 
 	while (tokens[i])
 		i++;
+
         if (i > 0 && !strcmp("&", tokens[i-1])) {
 		*bg_flag=1;
 		free(tokens[i-1]);
@@ -96,6 +97,8 @@ struct AST* parse_tokens(char **tokens, int *bg_flag)
 	else {
 		*bg_flag=0;
 	}
+
+	// TODO test for redirection too
 
 	return parse_binop(tokens, NODE_DISJ);
 }
