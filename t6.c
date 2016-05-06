@@ -44,18 +44,6 @@ int main(int argc, char **argv, char **envp)
 
 		n = parse(f, &b, envp);
 
-		if (n && !perform_builtin(n)) {
-			if (!(p = fork())) {
-				interpret(n, envp);
-				puts("== SHOULD NEVER GET HERE ==");
-				return -1;
-			}
-
-			if (!b) {
-				waitpid(p, &status, 0);
-			}
-		}
-
 		if (n)
 			free_ast(n);
 
