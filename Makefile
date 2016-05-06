@@ -4,7 +4,7 @@ CFLAGS=-std=c99 -Wall -Werror
 SOURCES=tokenizer.c parser.c interpreter.c variables.c builtins.c
 OBJECTS=$(SOURCES:.c=.o)
 
-all: t1 t2 t3 t4 t5 t6
+all: t1 t2 t3 t4 t5 t6 s
 
 clean:
 	rm -f *.o
@@ -30,3 +30,6 @@ t5: $(OBJECTS) t5.c
 
 t6: $(OBJECTS) t6.c
 	gcc -o t6 $(OBJECTS) t6.c
+
+s: $(OBJECTS) s.c
+	gcc -o s $(OBJECTS) s.c

@@ -5,6 +5,7 @@
 #include <limits.h>
 
 #include "parser.h"
+#include "interpreter.h"
 #include "builtins.h"
 
 char cwd[PATH_MAX];
@@ -28,11 +29,17 @@ void builtin_cd(char **args)
 	char *dir;
 
 	if (!(dir = args[1])) {
-		// TODO getpwnam to cd ~
+		if (!(dir = getenv("HOME"))) {
+			fprintf(stderr, "%s: invalid $HOME\n", interactive_mode ? "Warning" : "Error");
+			if (!interactive_mode)
+				exit(-1);
+		}
 	}
 
 	if (chdir(dir)) {
-		fprintf(stderr, "Error: Could not change directory to [%s]\n", dir);
+		fprintf(stderr, "%s: could not change directory to [%s]\n", interactive_mode ? "Warning" : "Error", dir);
+		if (!interactive_mode)
+			exit(-1);
 	}
 	else {
 		getcwd(cwd, PATH_MAX);
@@ -45,7 +52,9 @@ void builtin_set(char **argv) {
 		setenv(argv[1], argv[2], INT_MAX);
 	}
 	else {
-		fprintf(stderr, "Error: set requires two arguments\n");
+		fprintf(stderr, "%s: set requires two arguments\n", interactive_mode ? "Warning" : "Error");
+		if (!interactive_mode)
+			exit(-1);
 	}
 }
 
@@ -54,6 +63,8 @@ void builtin_unset(char **argv) {
 		unsetenv(argv[1]);
 	}
 	else {
-		fprintf(stderr, "Error: unset requires an argumens\n");
+		fprintf(stderr, "%s: unset requires an argument\n", interactive_mode ? "Warning" : "Error");
+		if (!interactive_mode)
+			exit(-1);
 	}
 }

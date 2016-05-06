@@ -7,6 +7,8 @@
 #include "parser.h"
 #include "interpreter.h"
 
+int interactive_mode = 0;
+
 void interpret_command(struct AST* n, char **envp)
 {
 	assert(n->type == NODE_COMMAND);

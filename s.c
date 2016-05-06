@@ -23,6 +23,8 @@ int main(int argc, char **argv, char **envp)
 	int status;
 	pid_t p;
 
+	setenv("SHELL", "/bin/s", 1);
+
 	if (argc == 1) {
 		f = stdin;
 
