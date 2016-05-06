@@ -1,0 +1,4 @@
+s
+=
+
+simpler shell
