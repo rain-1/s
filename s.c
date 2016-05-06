@@ -14,7 +14,7 @@ void prompt()
 	}
 }
 
-int main(int argc, char **argv, char **envp)
+int main(int argc, char **argv)
 {
 	struct AST* n;
 	int i, b;
@@ -44,11 +44,11 @@ int main(int argc, char **argv, char **envp)
 	do {
 		prompt();
 
-		n = parse(f, &b, envp);
+		n = parse(f, &b);
 
 		if (n && !perform_builtin(n)) {
 			if (!(p = fork())) {
-				interpret(n, envp);
+				interpret(n);
 				puts("== SHOULD NEVER GET HERE ==");
 				return -1;
 			}

@@ -9,23 +9,23 @@
 
 int interactive_mode = 0;
 
-void interpret_command(struct AST* n, char **envp)
+void interpret_command(struct AST* n)
 {
 	assert(n->type == NODE_COMMAND);
 
-	execvpe(n->node.tokens[0], n->node.tokens, envp);
+	execvp(n->node.tokens[0], n->node.tokens);
 
 	fprintf(stderr, "Error: Could not execute the program named [%s]\n", n->node.tokens[0]);
 	exit(-1);
 }
 
-void interpret_junction(struct AST* n, char **envp)
+void interpret_junction(struct AST* n)
 {
 	pid_t p;
 	int r;
 
 	if (n->type == NODE_COMMAND) {
-		interpret_command(n, envp);
+		interpret_command(n);
 	}
 
 	switch(p = fork()) {
@@ -33,7 +33,7 @@ void interpret_junction(struct AST* n, char **envp)
 		fprintf(stderr, "fork() failure");
 		break;
 	case 0:
-		interpret(n->node.child.l, envp);
+		interpret(n->node.child.l);
 		break;
 	default:
 		waitpid(p, &r, 0);
@@ -49,16 +49,16 @@ void interpret_junction(struct AST* n, char **envp)
 		if ((!WEXITSTATUS(r)) ^ (n->type == NODE_CONJ)) {
 			exit(WEXITSTATUS(r));
 		} else {
-			interpret(n->node.child.r, envp);
+			interpret(n->node.child.r);
 		}
 		break;
 	}
 }
 
-void interpret_pipe(struct AST* n, char **envp)
+void interpret_pipe(struct AST* n)
 {
 	if (n->type == NODE_COMMAND) {
-		interpret_command(n, envp);
+		interpret_command(n);
 	}
 
 	int fd[2];
@@ -75,28 +75,28 @@ void interpret_pipe(struct AST* n, char **envp)
 		close(STDOUT_FILENO);
 		dup(fd[1]);
 		close(fd[1]);
-		interpret_command(n->node.child.l, envp);
+		interpret_command(n->node.child.l);
 	} else {	     // parent
 		close(fd[1]);
 		close(STDIN_FILENO);
 		dup(fd[0]);
 		close(fd[0]);
-		interpret_pipe(n->node.child.r, envp);
+		interpret_pipe(n->node.child.r);
 	}
 }
 
-void interpret(struct AST* n, char **envp)
+void interpret(struct AST* n)
 {
 	switch(n->type) {
 	case NODE_COMMAND:
-		interpret_command(n, envp);
+		interpret_command(n);
 		break;
 	case NODE_CONJ:
 	case NODE_DISJ:
-		interpret_junction(n, envp);
+		interpret_junction(n);
 		break;
 	case NODE_PIPE:
-		interpret_pipe(n, envp);
+		interpret_pipe(n);
 		break;
 	}
 }

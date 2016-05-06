@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "tokenizer.h"
+#include "variables.h"
 
 char tok_buf[TOK_MAX];
 
@@ -71,4 +72,28 @@ int token(FILE *stream)
 		return -1;
 
 	return l;
+}
+
+char** read_tokens(FILE *f)
+{
+	char **tokens;
+	int i, t;
+
+	i = 0;
+
+	tokens = malloc(sizeof(char*)*MAX_TOKS_PER_LINE);
+
+	while ((t = token(f)) != -1) {
+		tokens[i] = expand_variables(tok_buf, t);
+
+		i++;
+		if (i >= MAX_TOKS_PER_LINE) {
+			fprintf(stderr, "Line too long!\n");
+			exit(-1);
+		}
+	}
+
+	tokens[i] = NULL;
+
+	return tokens;
 }

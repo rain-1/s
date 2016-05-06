@@ -14,7 +14,7 @@ void prompt()
 	}
 }
 
-int main(int argc, char **argv, char **envp)
+int main(int argc, char **argv)
 {
 	struct AST* n;
 	int i, b;
@@ -42,7 +42,7 @@ int main(int argc, char **argv, char **envp)
 	do {
 		prompt();
 
-		n = parse(f, &b, envp);
+		n = parse(f, &b);
 
 		if (n)
 			free_ast(n);

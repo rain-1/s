@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "tokenizer.h"
-#include "variables.h"
 #include "parser.h"
 
 char *operator_for[] = {
@@ -42,31 +41,6 @@ void free_ast(struct AST *n)
 {
 	free(free_ast_loop(n));
 }
-
-char** read_tokens(FILE *f, char **envp)
-{
-	char **tokens;
-	int i, t;
-
-	i = 0;
-
-	tokens = malloc(sizeof(char*)*MAX_TOKS_PER_LINE);
-
-	while ((t = token(f)) != -1) {
-		tokens[i] = expand_variables(tok_buf, t, envp);
-
-		i++;
-		if (i >= MAX_TOKS_PER_LINE) {
-			fprintf(stderr, "Line too long!\n");
-			exit(-1);
-		}
-	}
-
-	tokens[i] = NULL;
-
-	return tokens;
-}
-
 
 struct AST* parse_binop(char **tokens, NodeType ty)
 {
@@ -126,9 +100,9 @@ struct AST* parse_tokens(char **tokens, int *bg_flag)
 	return parse_binop(tokens, NODE_DISJ);
 }
 
-struct AST* parse(FILE *f, int *bg_flag, char **envp)
+struct AST* parse(FILE *f, int *bg_flag)
 {
-	char **tokens = read_tokens(f, envp);
+	char **tokens = read_tokens(f);
 
 	if (tokens[0]) {
 		return parse_tokens(tokens, bg_flag);

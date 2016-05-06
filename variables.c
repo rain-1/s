@@ -9,7 +9,7 @@
 char variable_name[TOK_MAX];
 char *read_var_error;
 
-char *expand_variables(char *tok, int t, char **envp)
+char *expand_variables(char *tok, int t)
 {
 	char *stok, *o, *val;
 	int alloc_len;
