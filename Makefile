@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c99 -Wall -Werror
+CFLAGS=-std=c99 -D_GNU_SOURCE -Wall -Werror
 
 SOURCES=tokenizer.c parser.c interpreter.c variables.c builtins.c
 OBJECTS=$(SOURCES:.c=.o)

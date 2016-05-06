@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "tokenizer.h"
 #include "parser.h"
 
 void display_ast(struct AST* n)

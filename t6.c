@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
+#include "tokenizer.h"
 #include "parser.h"
 #include "interpreter.h"
 #include "builtins.h"

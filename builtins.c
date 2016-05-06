@@ -4,6 +4,10 @@
 #include <unistd.h>
 #include <limits.h>
 
+#ifdef __linux__
+#include <linux/limits.h>
+#endif
+
 #include "parser.h"
 #include "interpreter.h"
 #include "builtins.h"
