@@ -12,7 +12,9 @@ char cwd[PATH_MAX];
 int perform_builtin(struct AST *n)
 {
 	if (n->type == NODE_COMMAND && n->node.tokens[0]) {
-		if (!strncmp(n->node.tokens[0], "cd", strlen("cd"))) builtin_cd(n->node.tokens);
+		if (!strcmp("cd", n->node.tokens[0])) builtin_cd(n->node.tokens);
+		else if (!strcmp("set", n->node.tokens[0])) builtin_set(n->node.tokens);
+		else if (!strcmp("unset", n->node.tokens[0])) builtin_unset(n->node.tokens);
 		else return 0;
 
 		return 1;
@@ -35,5 +37,23 @@ void builtin_cd(char **args)
 	else {
 		getcwd(cwd, PATH_MAX);
 		setenv("PWD", cwd, 1);
+	}
+}
+
+void builtin_set(char **argv) {
+	if (argv[1] && argv[2]) {
+		setenv(argv[1], argv[2], INT_MAX);
+	}
+	else {
+		fprintf(stderr, "Error: set requires two arguments\n");
+	}
+}
+
+void builtin_unset(char **argv) {
+	if (argv[1]) {
+		unsetenv(argv[1]);
+	}
+	else {
+		fprintf(stderr, "Error: unset requires an argumens\n");
 	}
 }

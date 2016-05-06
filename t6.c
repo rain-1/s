@@ -43,8 +43,8 @@ int main(int argc, char **argv, char **envp)
 
 	do {
 		prompt();
-		n = parse(f, &b, envp);
 
+		n = parse(f, &b, envp);
 		if (!perform_builtin(n)) {
 			if (!(p = fork())) {
 				interpret(n, envp);
