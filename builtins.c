@@ -40,6 +40,8 @@ void builtin_cd(char **args)
 			fprintf(stderr, "%s: invalid $HOME\n", interactive_mode ? "Warning" : "Error");
 			if (!interactive_mode)
 				exit(-1);
+			else
+				return;
 		}
 	}
 
