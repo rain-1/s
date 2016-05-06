@@ -111,6 +111,9 @@ struct AST* parse(FILE *f, int *bg_flag)
 		return parse_tokens(tokens, bg_flag);
 	}
 	else {
+		free_ast_commands(tokens);
+		free(tokens);
+
 		return NULL;
 	}
 }
