@@ -45,7 +45,8 @@ int main(int argc, char **argv, char **envp)
 		prompt();
 
 		n = parse(f, &b, envp);
-		if (!perform_builtin(n)) {
+
+		if (n && !perform_builtin(n)) {
 			if (!(p = fork())) {
 				interpret(n, envp);
 				puts("== SHOULD NEVER GET HERE ==");
@@ -57,7 +58,8 @@ int main(int argc, char **argv, char **envp)
 			}
 		}
 
-		free_ast(n);
+		if (n)
+			free_ast(n);
 
 		skip_newline(f);
 	} while(!feof(f));

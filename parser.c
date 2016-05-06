@@ -77,6 +77,10 @@ struct AST* parse_binop(char **tokens, NodeType ty)
 	stokens = tokens;
 
 	if (ty == NODE_COMMAND) {
+		if (!tokens[0]) {
+			fprintf(stderr, "Error: zero-length command\n");
+			exit(-1);
+		}
 		n = malloc(sizeof(struct AST));
 		n->type = NODE_COMMAND;
 		n->node.tokens = stokens;
@@ -124,5 +128,12 @@ struct AST* parse_tokens(char **tokens, int *bg_flag)
 
 struct AST* parse(FILE *f, int *bg_flag, char **envp)
 {
-	return parse_tokens(read_tokens(f, envp), bg_flag);
+	char **tokens = read_tokens(f, envp);
+
+	if (tokens[0]) {
+		return parse_tokens(tokens, bg_flag);
+	}
+	else {
+		return NULL;
+	}
 }
