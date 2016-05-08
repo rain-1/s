@@ -26,6 +26,8 @@ int main(int argc, char **argv)
 	int status;
 	pid_t p;
 
+	char *x, *y;
+
 	if (argc == 1) {
 		f = stdin;
 
@@ -45,7 +47,7 @@ int main(int argc, char **argv)
 	do {
 		prompt();
 
-		n = parse(f, &b);
+		n = parse(f, &b, &x, &y);
 
 		if (n)
 			free_ast(n);

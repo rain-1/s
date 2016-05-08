@@ -20,6 +20,6 @@ extern char *operator_for[];
 
 void free_ast(struct AST *);
 
-struct AST* parse_tokens(char **tokens, int *bg_flag);
+struct AST* parse_tokens(char **tokens, int *bg_flag, char **redir_in_flag, char **redir_out_flag);
 
-struct AST* parse(FILE *f, int *bg_flag);
+struct AST* parse(FILE *f, int *bg_flag, char **redir_in_flag, char **redir_out_flag);

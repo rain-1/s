@@ -83,7 +83,21 @@ struct AST* parse_binop(char **tokens, NodeType ty)
 	return parse_binop(stokens, ty-1);
 }
 
-struct AST* parse_tokens(char **tokens, int *bg_flag)
+void parse_redirection(char **tokens, char **redir_in_flag, char **redir_out_flag)
+{
+	if (!strcmp("<", tokens[0]))
+		*redir_in_flag = tokens[1];
+	else if (!strcmp(">", tokens[0]))
+		*redir_out_flag = tokens[1];
+	else
+		return;
+
+	free(tokens[0]);
+	tokens[1] = NULL;
+	tokens[0] = NULL;
+}
+
+struct AST* parse_tokens(char **tokens, int *bg_flag, char **redir_in_flag, char **redir_out_flag)
 {
 	int i = 0;
 
@@ -93,25 +107,30 @@ struct AST* parse_tokens(char **tokens, int *bg_flag)
         if (i > 0 && !strcmp("&", tokens[i-1])) {
 		*bg_flag=1;
 		free(tokens[i-1]);
-		tokens[i-1] = NULL;
+		tokens[--i] = NULL;
 	}
 	else {
 		*bg_flag=0;
 	}
 
-	// TODO test for redirection too
+	*redir_in_flag=NULL;
+	*redir_out_flag=NULL;
+	if (i >= 2)
+		parse_redirection(tokens+i-2, redir_in_flag, redir_out_flag);
+	if (i >= 4)
+		parse_redirection(tokens+i-4, redir_in_flag, redir_out_flag);
 
 	return parse_binop(tokens, NODE_DISJ);
 }
 
-struct AST* parse(FILE *f, int *bg_flag)
+struct AST* parse(FILE *f, int *bg_flag, char **redir_in_flag, char **redir_out_flag)
 {
 	char **tokens = read_tokens(f);
 
 	if (!tokens)
 		return NULL;
 	if (tokens[0])
-		return parse_tokens(tokens, bg_flag);
+		return parse_tokens(tokens, bg_flag, redir_in_flag, redir_out_flag);
 
 	free_ast_commands(tokens);
 	free(tokens);

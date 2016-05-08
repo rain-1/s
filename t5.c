@@ -38,6 +38,8 @@ int main(int argc, char **argv) {
 	struct AST* n;
 	int i, b;
 	FILE *f;
+	
+	char *x, *y;
 
 	if (argc == 1)
 		f = stdin;
@@ -47,7 +49,7 @@ int main(int argc, char **argv) {
 	}
 
 	do {
-		n = parse(f, &b);
+		n = parse(f, &b, &x, &y);
 		display_ast(n);
 
 		skip_newline(f);
