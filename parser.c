@@ -107,13 +107,13 @@ struct AST* parse(FILE *f, int *bg_flag)
 {
 	char **tokens = read_tokens(f);
 
-	if (tokens[0]) {
-		return parse_tokens(tokens, bg_flag);
-	}
-	else {
-		free_ast_commands(tokens);
-		free(tokens);
-
+	if (!tokens)
 		return NULL;
-	}
+	if (tokens[0])
+		return parse_tokens(tokens, bg_flag);
+
+	free_ast_commands(tokens);
+	free(tokens);
+
+	return NULL;
 }

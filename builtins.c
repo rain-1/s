@@ -8,6 +8,7 @@
 #include <linux/limits.h>
 #endif
 
+#include "reporting.h"
 #include "parser.h"
 #include "interpreter.h"
 #include "builtins.h"

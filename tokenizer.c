@@ -86,7 +86,10 @@ char** read_tokens(FILE *f)
 	tokens = malloc(sizeof(char*)*MAX_TOKS_PER_LINE);
 
 	while ((t = token(f)) != -1) {
-		tokens[i] = expand_variables(tok_buf, t);
+		if (!(tokens[i] = expand_variables(tok_buf, t))) {
+			free(tokens);
+			return NULL;
+		}
 
 		i++;
 		if (i >= MAX_TOKS_PER_LINE) {

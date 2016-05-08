@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "reporting.h"
 #include "tokenizer.h"
 #include "variables.h"
 
@@ -23,13 +24,15 @@ char *expand_variables(char *tok, int t)
 	while (*tok) {
 		if (*tok == '$') {
 			if (!(tok = read_variable_prefix(tok))) {
-				fprintf(stderr, "Error parsing variable inside token [%s] at character [%d]. %s.\n", stok, i, read_var_error);
-				exit(-1);
+				report("Error parsing variable inside token [%s] at character [%d]. %s.\n", stok, i, read_var_error);
+				free(o);
+				return NULL;
 			}
 
 			if (!(val = getenv(variable_name))) {
-				fprintf(stderr, "Reference to an undefined variable inside token [%s] at character [%d]\n", stok, i);
-				exit(-1);
+				report("Reference to an undefined variable inside token [%s] at character [%d]\n", stok, i);
+				free(o);
+				return NULL;
 			}
 
 			l = strlen(val);

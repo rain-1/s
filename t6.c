@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "reporting.h"
 #include "tokenizer.h"
 #include "parser.h"
 #include "interpreter.h"
