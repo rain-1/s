@@ -4,6 +4,7 @@
 
 #include "tokenizer.h"
 #include "parser.h"
+#include "reporting.h"
 
 char *operator_for[] = {
 	[NODE_PIPE] = "|",
@@ -52,7 +53,7 @@ struct AST* parse_binop(char **tokens, NodeType ty)
 
 	if (ty == NODE_COMMAND) {
 		if (!tokens[0]) {
-			fprintf(stderr, "Error: bad syntax, zero-length command\n");
+			reporterr("Error: bad syntax, zero-length command\n");
 			exit(-1);
 		}
 		n = malloc(sizeof(struct AST));

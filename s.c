@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 	else {
 		f = fopen(argv[1], "r");
 		if (!f) {
-			fprintf(stderr, "Could not open file <%s>!", argv[1]);
+			reporterr("Could not open file <%s>!", argv[1]);
 			exit(-1);
 		}
 

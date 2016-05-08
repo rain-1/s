@@ -7,6 +7,7 @@
 
 #include "parser.h"
 #include "interpreter.h"
+#include "reporting.h"
 
 int interactive_mode = 0;
 
@@ -16,7 +17,7 @@ void interpret_command(struct AST* n)
 
 	execvp(n->node.tokens[0], n->node.tokens);
 
-	fprintf(stderr, "Error: Could not execute the program named [%s]\n", n->node.tokens[0]);
+	reporterr("Error: Could not execute the program named [%s]\n", n->node.tokens[0]);
 	exit(-1);
 }
 
@@ -31,7 +32,7 @@ void interpret_junction(struct AST* n)
 
 	switch(p = fork()) {
 	case -1: 
-		fprintf(stderr, "fork() failure");
+		reporterr("fork() failure");
 		break;
 	case 0:
 		interpret(n->node.child.l);
@@ -69,7 +70,7 @@ void interpret_pipe(struct AST* n)
 
 	f = fork();
 	if (f == -1) {
-		fprintf(stderr, "fork() failed");
+		reporterr("fork() failure");
 		exit(1);
 	} else if (f == 0) { // child
 		close(fd[0]);

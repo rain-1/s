@@ -3,6 +3,7 @@
 
 #include "tokenizer.h"
 #include "variables.h"
+#include "reporting.h"
 
 char tok_buf[TOK_MAX];
 
@@ -61,7 +62,7 @@ int token(FILE *stream)
 		buf[l] = fgetc(stream); // TODO: backslash
 		l++;
 		if (l >= TOK_MAX-1) {
-			fprintf(stderr, "Token too long!");
+			reporterr("Token too long!");
 			exit(-1);
 		}
 	}
@@ -93,7 +94,7 @@ char** read_tokens(FILE *f)
 
 		i++;
 		if (i >= MAX_TOKS_PER_LINE) {
-			fprintf(stderr, "Line too long!\n");
+			reporterr("Line too long!\n");
 			exit(-1);
 		}
 	}
