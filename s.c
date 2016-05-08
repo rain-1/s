@@ -28,7 +28,6 @@ int main(int argc, char **argv)
 	pid_t p;
 
 	int bg;
-	char *redir_in, *redir_out;
 
 	setenv("SHELL", "/bin/s", 1);
 
@@ -51,7 +50,7 @@ int main(int argc, char **argv)
 	do {
 		prompt();
 
-		n = parse(f, &bg, &redir_in, &redir_out);
+		n = parse(f, &bg);
 
 		if (n && !perform_builtin(n)) {
 			if (!(p = fork())) {
