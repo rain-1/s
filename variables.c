@@ -24,7 +24,7 @@ char *expand_variables(char *tok, int t)
 	while (*tok) {
 		if (*tok == '$') {
 			if (!(tok = read_variable_prefix(tok))) {
-				report("Error parsing variable inside token [%s] at character [%d]. %s.\n", stok, i, read_var_error);
+				report("Problem parsing variable inside token [%s] at character [%d]. %s.\n", stok, i, read_var_error);
 				free(o);
 				return NULL;
 			}

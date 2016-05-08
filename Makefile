@@ -9,6 +9,7 @@ all: t1 t2 t3 t4 t5 t6 s
 clean:
 	rm -f *.o
 	rm -f t1 t2 t3 t4 t5 t6
+	rm -f s
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@

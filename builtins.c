@@ -38,18 +38,13 @@ void builtin_cd(char **args)
 
 	if (!(dir = args[1])) {
 		if (!(dir = getenv("HOME"))) {
-			fprintf(stderr, "%s: invalid $HOME\n", interactive_mode ? "Warning" : "Error");
-			if (!interactive_mode)
-				exit(-1);
-			else
-				return;
+			report("invalid $HOME\n");
+			return;
 		}
 	}
 
 	if (chdir(dir)) {
-		fprintf(stderr, "%s: could not change directory to [%s]\n", interactive_mode ? "Warning" : "Error", dir);
-		if (!interactive_mode)
-			exit(-1);
+		report("could not change directory to [%s]\n", dir);
 	}
 	else {
 		getcwd(cwd, PATH_MAX);
@@ -58,23 +53,15 @@ void builtin_cd(char **args)
 }
 
 void builtin_set(char **argv) {
-	if (argv[1] && argv[2]) {
+	if (argv[1] && argv[2])
 		setenv(argv[1], argv[2], INT_MAX);
-	}
-	else {
-		fprintf(stderr, "%s: set requires two arguments\n", interactive_mode ? "Warning" : "Error");
-		if (!interactive_mode)
-			exit(-1);
-	}
+	else
+		report("set requires two arguments\n");
 }
 
 void builtin_unset(char **argv) {
-	if (argv[1]) {
+	if (argv[1])
 		unsetenv(argv[1]);
-	}
-	else {
-		fprintf(stderr, "%s: unset requires an argument\n", interactive_mode ? "Warning" : "Error");
-		if (!interactive_mode)
-			exit(-1);
-	}
+	else
+		report("unset requires an argument\n");
 }
