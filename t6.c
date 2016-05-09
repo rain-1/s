@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #include "reporting.h"
+#include "region.h"
 #include "tokenizer.h"
 #include "parser.h"
 #include "interpreter.h"
@@ -26,6 +27,8 @@ int main(int argc, char **argv)
 	int status;
 	pid_t p;
 
+	region r;
+
 	if (argc == 1) {
 		f = stdin;
 
@@ -45,10 +48,9 @@ int main(int argc, char **argv)
 	do {
 		prompt();
 
-		n = parse(f, &b);
-
-		if (n)
-			free_ast(n);
+		region_create(&r);
+		n = parse(&r, f, &b);
+		region_free(&r);
 
 		skip_newline(f);
 	} while(!feof(f));

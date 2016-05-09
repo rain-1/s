@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "region.h"
 #include "tokenizer.h"
 #include "parser.h"
 #include "reporting.h"
@@ -12,38 +13,7 @@ char *operator_for[] = {
 	[NODE_DISJ] = "||",
 };
 
-void free_ast_commands(char **r)
-{
-	while(*r) {
-		free(*r);
-		r++;
-	}
-}
-
-char** free_ast_loop(struct AST *n)
-{
-	char **r;
-
-	if (n->type == NODE_COMMAND) {
-		r = n->node.tokens;
-		free_ast_commands(r);
-		free(n);
-		return r;
-	}
-	else {
-		free_ast_loop(n->node.child.r);
-		r=free_ast_loop(n->node.child.l);
-		free(n);
-		return r;
-	}
-}
-
-void free_ast(struct AST *n)
-{
-	free(free_ast_loop(n));
-}
-
-struct AST* parse_binop(char **tokens, NodeType ty)
+struct AST* parse_binop(region *r, char **tokens, NodeType ty)
 {
 	char **stokens;
 	struct AST* n;
@@ -56,7 +26,7 @@ struct AST* parse_binop(char **tokens, NodeType ty)
 			reporterr("Error: bad syntax, zero-length command\n");
 			exit(-1);
 		}
-		n = malloc(sizeof(struct AST));
+		n = region_malloc(r, sizeof(struct AST));
 		n->type = NODE_COMMAND;
 		n->node.tokens = stokens;
 
@@ -65,13 +35,12 @@ struct AST* parse_binop(char **tokens, NodeType ty)
 
 	while (tokens[0]) {
 		if (!strcmp(operator_for[ty], tokens[0])) {
-			free(tokens[0]);
 			tokens[0] = NULL;
 
-			m = malloc(sizeof(struct AST));
+			m = region_malloc(r, sizeof(struct AST));
 			m->type = ty;
-			m->node.child.l = parse_binop(stokens, ty-1);
-			m->node.child.r = parse_binop(tokens+1, ty);
+			m->node.child.l = parse_binop(r, stokens, ty-1);
+			m->node.child.r = parse_binop(r, tokens+1, ty);
 
 			return m;
 		}
@@ -80,10 +49,10 @@ struct AST* parse_binop(char **tokens, NodeType ty)
 		}
 	}
 
-	return parse_binop(stokens, ty-1);
+	return parse_binop(r, stokens, ty-1);
 }
 
-struct AST* parse_tokens(char **tokens, int *bg_flag)
+struct AST* parse_tokens(region *r, char **tokens, int *bg_flag)
 {
 	int i = 0;
 
@@ -92,27 +61,23 @@ struct AST* parse_tokens(char **tokens, int *bg_flag)
 
         if (i > 0 && !strcmp("&", tokens[i-1])) {
 		*bg_flag=1;
-		free(tokens[i-1]);
 		tokens[--i] = NULL;
 	}
 	else {
 		*bg_flag=0;
 	}
 
-	return parse_binop(tokens, NODE_DISJ);
+	return parse_binop(r, tokens, NODE_DISJ);
 }
 
-struct AST* parse(FILE *f, int *bg_flag)
+struct AST* parse(region *r, FILE *f, int *bg_flag)
 {
-	char **tokens = read_tokens(f);
+	char **tokens = read_tokens(r, f);
 
 	if (!tokens)
 		return NULL;
 	if (tokens[0])
-		return parse_tokens(tokens, bg_flag);
-
-	free_ast_commands(tokens);
-	free(tokens);
+		return parse_tokens(r, tokens, bg_flag);
 
 	return NULL;
 }

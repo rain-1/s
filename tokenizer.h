@@ -7,4 +7,4 @@ void skip_spaces(FILE *stream);
 void skip_newline(FILE *stream);
 void skip_comment(FILE *stream);
 int token(FILE *stream);
-char** read_tokens(FILE *stream);
+char** read_tokens(region *r, FILE *stream);

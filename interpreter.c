@@ -5,9 +5,10 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#include "reporting.h"
+#include "region.h"
 #include "parser.h"
 #include "interpreter.h"
-#include "reporting.h"
 
 int interactive_mode = 0;
 

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "region.h"
 #include "tokenizer.h"
 #include "variables.h"
 #include "reporting.h"
@@ -77,18 +78,17 @@ int token(FILE *stream)
 	return l;
 }
 
-char** read_tokens(FILE *f)
+char** read_tokens(region *r, FILE *f)
 {
 	char **tokens;
 	int i, t;
 
 	i = 0;
 
-	tokens = malloc(sizeof(char*)*MAX_TOKS_PER_LINE);
+	tokens = region_malloc(r, sizeof(char*)*MAX_TOKS_PER_LINE);
 
 	while ((t = token(f)) != -1) {
-		if (!(tokens[i] = expand_variables(tok_buf, t))) {
-			free(tokens);
+		if (!(tokens[i] = expand_variables(r, tok_buf, t))) {
 			return NULL;
 		}
 

@@ -18,9 +18,7 @@ struct AST {
 
 extern char *operator_for[];
 
-void free_ast(struct AST *);
+struct AST* parse_tokens(region *r, char **tokens, int *bg_flag);
 
-struct AST* parse_tokens(char **tokens, int *bg_flag);
-
-struct AST* parse(FILE *f, int *bg_flag);
+struct AST* parse(region *r, FILE *f, int *bg_flag);
 

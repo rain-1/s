@@ -4,6 +4,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "region.h"
 #include "reporting.h"
 #include "tokenizer.h"
 #include "parser.h"
@@ -29,6 +30,8 @@ int main(int argc, char **argv)
 
 	int bg;
 
+	region r;
+
 	setenv("SHELL", "/bin/s", 1);
 
 	if (argc == 1) {
@@ -50,7 +53,9 @@ int main(int argc, char **argv)
 	do {
 		prompt();
 
-		n = parse(f, &bg);
+		region_create(&r);
+
+		n = parse(&r, f, &bg);
 
 		if (n && !perform_builtin(n)) {
 			if (!(p = fork())) {
@@ -64,8 +69,7 @@ int main(int argc, char **argv)
 			}
 		}
 
-		if (n)
-			free_ast(n);
+		region_free(&r);
 
 		skip_newline(f);
 	} while(!feof(f));

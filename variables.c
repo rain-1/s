@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "region.h"
 #include "reporting.h"
 #include "tokenizer.h"
 #include "variables.h"
@@ -10,7 +11,7 @@
 char variable_name[TOK_MAX];
 char *read_var_error;
 
-char *expand_variables(char *tok, int t)
+char *expand_variables(region *r, char *tok, int t)
 {
 	char *stok, *o, *val;
 	int alloc_len;
@@ -18,26 +19,24 @@ char *expand_variables(char *tok, int t)
 
 	stok = tok;
 	alloc_len = t+1;
-	o = malloc(alloc_len);
+	o = region_malloc(r, alloc_len);
 
 	i = 0;
 	while (*tok) {
 		if (*tok == '$') {
 			if (!(tok = read_variable_prefix(tok))) {
 				report("Problem parsing variable inside token [%s] at character [%d]. %s.\n", stok, i, read_var_error);
-				free(o);
 				return NULL;
 			}
 
 			if (!(val = getenv(variable_name))) {
 				report("Reference to an undefined variable inside token [%s] at character [%d]\n", stok, i);
-				free(o);
 				return NULL;
 			}
 
 			l = strlen(val);
 			alloc_len += l;
-			o = realloc(o, alloc_len);
+			o = region_realloc(r, o, alloc_len);
 			memcpy(o + i, val, l);
 			i += l;
 		}
