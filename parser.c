@@ -23,8 +23,8 @@ struct AST* parse_binop(region *r, char **tokens, NodeType ty)
 
 	if (ty == NODE_COMMAND) {
 		if (!tokens[0]) {
-			reporterr("Error: bad syntax, zero-length command\n");
-			exit(-1);
+			report("Error: bad syntax, zero-length command\n");
+			return NULL;
 		}
 		n = region_malloc(r, sizeof(struct AST));
 		n->type = NODE_COMMAND;
@@ -39,8 +39,10 @@ struct AST* parse_binop(region *r, char **tokens, NodeType ty)
 
 			m = region_malloc(r, sizeof(struct AST));
 			m->type = ty;
-			m->node.child.l = parse_binop(r, stokens, ty-1);
-			m->node.child.r = parse_binop(r, tokens+1, ty);
+			if (!(m->node.child.l = parse_binop(r, stokens, ty-1)))
+				return NULL;
+			if (!(m->node.child.r = parse_binop(r, tokens+1, ty)))
+				return NULL;
 
 			return m;
 		}
