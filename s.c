@@ -11,26 +11,10 @@
 #include "interpreter.h"
 #include "builtins.h"
 
-void prompt()
-{
-	if (interactive_mode) {
-		printf("%s", geteuid() == 0 ? "s# " : "s$ ");
-		fflush(stdout);
-	}
-}
-
 int main(int argc, char **argv)
 {
-	struct AST* n;
 	int i;
 	FILE *f;
-
-	int status;
-	pid_t p;
-
-	int bg;
-
-	region r;
 
 	setenv("SHELL", "/bin/s", 1);
 
@@ -49,30 +33,7 @@ int main(int argc, char **argv)
 		interactive_mode = 0;
 	}
 
-
-	do {
-		prompt();
-
-		region_create(&r);
-
-		n = parse(&r, f, &bg);
-
-		if (n && !perform_builtin(n)) {
-			if (!(p = fork())) {
-				interpret(n);
-				puts("== SHOULD NEVER GET HERE ==");
-				return -1;
-			}
-
-			if (!bg) {
-				waitpid(p, &status, 0);
-			}
-		}
-
-		region_free(&r);
-
-		skip_newline(f);
-	} while(!feof(f));
+	loop(f);
 
 	return 0;
 }

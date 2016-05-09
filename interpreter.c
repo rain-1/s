@@ -7,8 +7,10 @@
 
 #include "reporting.h"
 #include "region.h"
+#include "tokenizer.h"
 #include "parser.h"
 #include "interpreter.h"
+#include "builtins.h"
 
 int interactive_mode = 0;
 
@@ -102,4 +104,43 @@ void interpret(struct AST* n)
 		interpret_pipe(n);
 		break;
 	}
+}
+
+void prompt()
+{
+	if (interactive_mode) {
+		printf("%s", geteuid() == 0 ? "s# " : "s$ ");
+		fflush(stdout);
+	}
+}
+
+void loop(FILE *f) {
+	pid_t p;
+	int bg;
+	region r;
+	struct AST* n;
+	int status;
+
+	do {
+		prompt();
+
+		region_create(&r);
+
+		n = parse(&r, f, &bg);
+
+		if (n && !perform_builtin(n)) {
+			if (!(p = fork())) {
+				interpret(n);
+				reporterr("== SHOULD NEVER GET HERE ==");
+			}
+
+			if (!bg) {
+				waitpid(p, &status, 0);
+			}
+		}
+
+		region_free(&r);
+
+		skip_newline(f);
+	} while(!feof(f));
 }

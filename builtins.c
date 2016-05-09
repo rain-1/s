@@ -25,6 +25,8 @@ int perform_builtin(struct AST *n)
 			builtin_set(n->node.tokens);
 		else if (!strcmp("unset", n->node.tokens[0]))
 			builtin_unset(n->node.tokens);
+		else if (!strcmp("source", n->node.tokens[0]))
+			builtin_source(n->node.tokens);
 		else return 0;
 
 		return 1;
@@ -65,4 +67,22 @@ void builtin_unset(char **argv) {
 		unsetenv(argv[1]);
 	else
 		report("unset requires an argument\n");
+}
+
+void builtin_source(char **argv) {
+	FILE *f;
+	int mode;
+
+	if (!argv[1]) {
+		report("source requires an argument\n");
+	}
+	else if (!(f = fopen(argv[1], "r"))) {
+		report("source open() failed\n");
+		return;
+	}
+
+	mode = interactive_mode;
+	interactive_mode = 0;
+	loop(f);
+	interactive_mode = mode;
 }

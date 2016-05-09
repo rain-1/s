@@ -10,7 +10,7 @@
 #include "interpreter.h"
 #include "builtins.h"
 
-void prompt()
+void prompt_()
 {
 	if (interactive_mode) {
 		printf("%s", geteuid() == 0 ? "s# " : "s$ ");
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 
 
 	do {
-		prompt();
+		prompt_();
 
 		region_create(&r);
 		n = parse(&r, f, &b);
