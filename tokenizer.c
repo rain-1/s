@@ -60,7 +60,13 @@ int token(FILE *stream)
 	// WARNING: fpeek must be done before feof
 	//          otherwise it may not succeed
 	while (!token_end(fpeek(stream)) && !feof(stream)) {
-		buf[l] = fgetc(stream); // TODO: backslash
+		buf[l] = fgetc(stream);
+		if (buf[l] == '\\') {
+			buf[l] = fgetc(stream);
+			fpeek(stream);
+			if (feof(stream))
+				reporterr("end of file when interpreting \\");
+		}
 		l++;
 		if (l >= TOK_MAX-1) {
 			reporterr("Token too long!");
