@@ -36,6 +36,12 @@ char *expand_variables(region *r, char *tok, int t)
 
 			l = strlen(val);
 			alloc_len += l;
+
+			if (alloc_len > TOK_MAX) {
+				report("Variable expansion blew up token size too large.");
+				return NULL;
+			}
+
 			o = region_realloc(r, o, alloc_len);
 			memcpy(o + i, val, l);
 			i += l;
