@@ -10,12 +10,27 @@ clean:
 	rm -f *.o
 	rm -f t6
 	rm -f s
+	rm -f supporting/\<
+	rm -f supporting/\>
+	rm -f supporting/\>\>
+	rm -f supporting/redir-box
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 
 t6: $(OBJECTS) t6.c
-	gcc -o t6 $(OBJECTS) t6.c
+	$(CC) -o t6 $(OBJECTS) t6.c
 
 s: $(OBJECTS) s.c
-	gcc -o s $(OBJECTS) s.c
+	$(CC) -o s $(OBJECTS) s.c
+
+supporting/redir-box: supporting/redir-box.c
+	$(CC) -o supporting/redir-box supporting/redir-box.c
+
+redir-box: supporting/redir-box
+	rm -f supporting/\<
+	rm -f supporting/\>
+	rm -f supporting/\>\>
+	ln -s supporting/redir-box supporting/\<
+	ln -s supporting/redir-box supporting/\>
+	ln -s supporting/redir-box supporting/\>\>
