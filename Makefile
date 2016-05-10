@@ -31,6 +31,6 @@ redir-box: supporting/redir-box
 	rm -f supporting/\<
 	rm -f supporting/\>
 	rm -f supporting/\>\>
-	ln -s supporting/redir-box supporting/\<
-	ln -s supporting/redir-box supporting/\>
-	ln -s supporting/redir-box supporting/\>\>
+	cd supporting ; ln -s redir-box \<
+	cd supporting ; ln -s redir-box \>
+	cd supporting ; ln -s redir-box \>\>
