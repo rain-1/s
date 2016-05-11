@@ -38,10 +38,10 @@ int main(int argc, char **argv) {
 		flags = "r";
 		break;
 	case gt:
-		flags = "w";
+		flags = "w+";
 		break;
 	case gtgt:
-		flags = "a";
+		flags = "a+";
 		break;
 	}
 
@@ -56,15 +56,12 @@ int main(int argc, char **argv) {
 		fout = ftmp;
 
 	do {
-		s = fread(buf, BUF_SIZE, 1, fin);
+		s = fread(buf, 1, BUF_SIZE, fin);
 
-		if (s == -1 || s == 0)
-			break;
-
-		if (fwrite(buf, s, 1, fout) != s) {
+		if (fwrite(buf, 1, s, fout) != s) {
 			fprintf(stderr, "Writing error\n");
 		}
-	} while(1);
+	} while(s != -1 && s != 0);
 
 	fclose(fout);
 
