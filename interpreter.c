@@ -20,8 +20,7 @@ void interpret_command(struct AST* n)
 
 	execvp(n->node.tokens[0], n->node.tokens);
 
-	reporterr("Error: Could not execute the program named [%s]\n", n->node.tokens[0]);
-	exit(-1);
+	_reporterr("Error: Could not execute the program named [%s]\n", n->node.tokens[0]);
 }
 
 void interpret_junction(struct AST* n)
@@ -35,7 +34,7 @@ void interpret_junction(struct AST* n)
 
 	switch(p = fork()) {
 	case -1: 
-		reporterr("fork() failure");
+		_reporterr("fork() failure");
 		break;
 	case 0:
 		interpret(n->node.child.l);
@@ -52,7 +51,7 @@ void interpret_junction(struct AST* n)
 		//     chain.
 
 		if ((!WEXITSTATUS(r)) ^ (n->type == NODE_CONJ)) {
-			exit(WEXITSTATUS(r));
+			_exit(WEXITSTATUS(r));
 		} else {
 			interpret(n->node.child.r);
 		}
@@ -73,8 +72,7 @@ void interpret_pipe(struct AST* n)
 
 	f = fork();
 	if (f == -1) {
-		reporterr("fork() failure");
-		exit(1);
+		_reporterr("fork() failure");
 	} else if (f == 0) { // child
 		close(fd[0]);
 		close(STDOUT_FILENO);
@@ -131,7 +129,7 @@ void loop(FILE *f) {
 		if (n && !perform_builtin(n)) {
 			if (!(p = fork())) {
 				interpret(n);
-				reporterr("== SHOULD NEVER GET HERE ==");
+				_reporterr("== SHOULD NEVER GET HERE ==");
 			}
 
 			if (!bg) {
