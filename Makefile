@@ -14,6 +14,7 @@ clean:
 	rm -f supporting/\>
 	rm -f supporting/\>\>
 	rm -f supporting/redir-box
+	rm -f supporting/glob
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
@@ -27,7 +28,10 @@ s: $(OBJECTS) s.c
 supporting/redir-box: supporting/redir-box.c
 	$(CC) -o supporting/redir-box supporting/redir-box.c
 
-redir-box: supporting/redir-box
+supporting/glob: supporting/glob.c
+	$(CC) -o supporting/glob supporting/glob.c
+
+redir-box: supporting/redir-box supporting/glob
 	rm -f supporting/\<
 	rm -f supporting/\>
 	rm -f supporting/\>\>
