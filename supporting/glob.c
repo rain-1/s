@@ -12,5 +12,8 @@ int main(int argc, char **argv) {
 		glob(argv[i], GLOB_DOOFFS | (i ? GLOB_APPEND : 0) | (strchr(argv[i], '*') ? 0 : GLOB_NOCHECK), NULL, &g);
 	}
 
-	return execvp(g.gl_pathv[0], g.gl_pathv+1);
+	execvp(g.gl_pathv[0], g.gl_pathv+1);
+
+	fprintf(stderr, "Error: could not execute %s\n", g.gl_pathv[0]);
+	return 1;
 }
