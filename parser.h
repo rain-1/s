@@ -20,5 +20,5 @@ extern char *operator_for[];
 
 struct AST* parse_tokens(region *r, char **tokens, int *bg_flag);
 
-struct AST* parse(region *r, FILE *f, int *bg_flag);
+struct AST* parse(region *r, string_port *port, int *bg_flag);
 

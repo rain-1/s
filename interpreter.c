@@ -7,10 +7,13 @@
 
 #include "reporting.h"
 #include "region.h"
+#include "stringport.h"
 #include "tokenizer.h"
 #include "parser.h"
 #include "interpreter.h"
 #include "builtins.h"
+
+#include "linenoise.h"
 
 int interactive_mode = 0;
 
@@ -104,12 +107,18 @@ void interpret(struct AST* n)
 	}
 }
 
-void prompt()
+void prompt(string_port *port)
 {
-	if (interactive_mode) {
-		printf("%s", geteuid() == 0 ? "s# " : "s$ ");
-		fflush(stdout);
-	}
+  char *line;
+  
+  if (interactive_mode) {
+    if((line = linenoise(geteuid() == 0 ? "s# " : "s$ ")) != NULL) {
+      *port = (string_port){ .kind=STRPORT_CHAR, .text=line, .place=0 };
+    }
+    else {
+      exit(0);
+    }
+  }
 }
 
 void loop(FILE *f) {
@@ -119,12 +128,18 @@ void loop(FILE *f) {
 	struct AST* n;
 	int status;
 
+	string_port port;
+	
+	if (!interactive_mode) {
+	  port = (string_port){ .kind=STRPORT_FILE, .fptr=f };
+	}
+	
 	do {
-		prompt();
+		prompt(&port);
 
 		region_create(&r);
 
-		n = parse(&r, f, &bg);
+		n = parse(&r, &port, &bg);
 
 		if (n && !perform_builtin(n)) {
 			if (!(p = fork())) {
@@ -139,6 +154,13 @@ void loop(FILE *f) {
 
 		region_free(&r);
 
-		skip_newline(f);
+		if (interactive_mode) {
+		  // TODO: Only add if command was sucessful?
+		  linenoiseHistoryAdd(port.text);
+		  free(port.text);
+		}
+		else {
+		  skip_newline(&port);
+		}
 	} while(!feof(f));
 }

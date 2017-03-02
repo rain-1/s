@@ -5,6 +5,7 @@
 
 #include "region.h"
 #include "reporting.h"
+#include "stringport.h"
 #include "tokenizer.h"
 #include "variables.h"
 

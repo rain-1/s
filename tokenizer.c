@@ -2,49 +2,39 @@
 #include <stdlib.h>
 
 #include "region.h"
+#include "stringport.h"
 #include "tokenizer.h"
 #include "variables.h"
 #include "reporting.h"
 
 char tok_buf[TOK_MAX];
 
-// from stackoverflow.com/questions/2082743/c-equivalent-to-fstreams-peek
-int fpeek(FILE *stream)
-{
-	int c;
-
-	c = fgetc(stream);
-	ungetc(c, stream);
-
-	return c;
-}
-
 int token_end(int chr)
 {
 	return chr == ' ' || chr == '\t' || chr == '\n' || chr == '#';
 }
 
-void skip_spaces(FILE *stream)
+void skip_spaces(string_port *stream)
 {
-	while (!feof(stream) && (fpeek(stream) == ' ' || fpeek(stream) == '\t'))
-		fgetc(stream);
+	while (!port_eof(stream) && (port_peek(stream) == ' ' || port_peek(stream) == '\t'))
+	        port_getc(stream);
 }
 
-void skip_newline(FILE *stream)
+void skip_newline(string_port *stream)
 {
 	skip_spaces(stream);
-	if (fpeek(stream) == '\n')
-		fgetc(stream);
+	if (port_peek(stream) == '\n')
+		port_getc(stream);
 	else
 		return;
 }
 
-void skip_comment(FILE *stream)
+void skip_comment(string_port *stream)
 {
-	while (!feof(stream) && fgetc(stream) != '\n');
+	while (!port_eof(stream) && port_getc(stream) != '\n');
 }
 
-int token(FILE *stream)
+int token(string_port *stream)
 {
 	// TODO strings
 
@@ -52,19 +42,19 @@ int token(FILE *stream)
 	int l;
 	
 	skip_spaces(stream);
-	if (feof(stream) || fpeek(stream) == '\n')
+	if (port_eof(stream) || port_peek(stream) == '\n')
 		return -1;
 
 	l = 0;
 	buf = tok_buf;
 	// WARNING: fpeek must be done before feof
 	//          otherwise it may not succeed
-	while (!token_end(fpeek(stream)) && !feof(stream)) {
-		buf[l] = fgetc(stream);
+	while (!token_end(port_peek(stream)) && !port_eof(stream)) {
+		buf[l] = port_getc(stream);
 		if (buf[l] == '\\') {
-			buf[l] = fgetc(stream);
-			fpeek(stream);
-			if (feof(stream))
+			buf[l] = port_getc(stream);
+			port_peek(stream);
+			if (port_eof(stream))
 				reporterr("end of file when interpreting \\");
 		}
 		l++;
@@ -75,7 +65,7 @@ int token(FILE *stream)
 	}
 	buf[l] = '\0';
 
-	if (fpeek(stream) == '#')
+	if (port_peek(stream) == '#')
 		skip_comment(stream);
 
 	if (!l)
@@ -84,7 +74,7 @@ int token(FILE *stream)
 	return l;
 }
 
-char** read_tokens(region *r, FILE *f)
+char** read_tokens(region *r, string_port *f)
 {
 	char **tokens;
 	int i, t;

@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "region.h"
+#include "stringport.h"
 #include "tokenizer.h"
 #include "parser.h"
 #include "reporting.h"
@@ -72,9 +73,9 @@ struct AST* parse_tokens(region *r, char **tokens, int *bg_flag)
 	return parse_binop(r, tokens, NODE_DISJ);
 }
 
-struct AST* parse(region *r, FILE *f, int *bg_flag)
+struct AST* parse(region *r, string_port *port, int *bg_flag)
 {
-	char **tokens = read_tokens(r, f);
+	char **tokens = read_tokens(r, port);
 
 	if (!tokens)
 		return NULL;

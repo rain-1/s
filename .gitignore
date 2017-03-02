@@ -9,3 +9,4 @@ t5
 t6
 *.core
 test_commands
+linenoise

@@ -1,10 +1,10 @@
 CC=gcc
 CFLAGS=-std=c99 -D_GNU_SOURCE -Wall -Werror
 
-SOURCES=tokenizer.c parser.c interpreter.c variables.c builtins.c region.c
+SOURCES=tokenizer.c parser.c interpreter.c variables.c builtins.c region.c stringport.c linenoise/linenoise.c
 OBJECTS=$(SOURCES:.c=.o)
 
-all: t6 s
+all: s
 
 clean:
 	rm -f *.o
@@ -17,12 +17,12 @@ clean:
 	rm -f supporting/glob
 
 %.o: %.c
-	$(CC) -c $(CFLAGS) $< -o $@
+	$(CC) -I linenoise -c $(CFLAGS) $< -o $@
 
-t6: $(OBJECTS) t6.c
-	$(CC) -o t6 $(OBJECTS) t6.c
+#t6: $(OBJECTS) t6.c
+#	$(CC) -o t6 $(OBJECTS) t6.c
 
-s: $(OBJECTS) s.c
+s: linenoise $(OBJECTS) s.c
 	$(CC) -o s $(OBJECTS) s.c
 
 supporting/redir-box: supporting/redir-box.c
@@ -38,3 +38,6 @@ redir-box: supporting/redir-box supporting/glob
 	cd supporting ; ln -s redir-box \<
 	cd supporting ; ln -s redir-box \>
 	cd supporting ; ln -s redir-box \>\>
+
+linenoise:
+	git clone https://github.com/antirez/linenoise.git
