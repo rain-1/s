@@ -40,4 +40,6 @@ redir-box: supporting/redir-box supporting/glob
 	cd supporting ; ln -s redir-box \>\>
 
 linenoise:
-	git clone https://github.com/antirez/linenoise.git
+	@echo "This project requires the linenoise library!"
+	@echo "git clone https://github.com/antirez/linenoise.git"
+	@exit -1
