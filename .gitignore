@@ -11,3 +11,5 @@ t6
 test_commands
 linenoise
 s
+supporting/*
+out/*

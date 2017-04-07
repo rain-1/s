@@ -31,7 +31,7 @@ supporting/redir-box: supporting/redir-box.c
 supporting/glob: supporting/glob.c
 	$(CC) -o supporting/glob supporting/glob.c
 
-redir-box: supporting/redir-box supporting/glob
+supporting: supporting/redir-box supporting/glob
 	rm -f supporting/\<
 	rm -f supporting/\>
 	rm -f supporting/\>\>
@@ -43,3 +43,12 @@ linenoise:
 	@echo "This project requires the linenoise library!"
 	@echo "git clone https://github.com/antirez/linenoise.git"
 	@exit -1
+
+install: s supporting
+	mkdir -p out
+	cp s out/
+	cp supporting/redir-box out/
+	cp 'supporting/<' out/
+	cp 'supporting/>' out/
+	cp 'supporting/>>' out/
+	cp 'supporting/glob' out/
