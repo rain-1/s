@@ -109,19 +109,18 @@ void interpret(struct AST* n)
 
 int prompt(string_port *port)
 {
-  char *line;
-  
-  if (interactive_mode) {
-    if((line = linenoise(geteuid() == 0 ? "s# " : "s$ ")) != NULL) {
-      *port = (string_port){ .kind=STRPORT_CHAR, .text=line, .place=0 };
-      return 0;
-    }
-    else {
-      return 1;
-    }
-  }
-  
-  return 0;
+	char *line;
+	
+	if (interactive_mode) {
+		if((line = linenoise(geteuid() == 0 ? "s# " : "s$ ")) != NULL) {
+			*port = (string_port){ .kind=STRPORT_CHAR, .text=line, .place=0 };
+			return 0;
+		}
+		
+		return 1;
+	}
+	
+	return 0;
 }
 
 void loop(FILE *f) {
@@ -130,24 +129,24 @@ void loop(FILE *f) {
 	region r;
 	struct AST* n;
 	int status;
-
+	
 	string_port port;
 	
 	if (!interactive_mode) {
-	  port = (string_port){ .kind=STRPORT_FILE, .fptr=f };
+		port = (string_port){ .kind=STRPORT_FILE, .fptr=f };
 	}
 	
 	
 	do {
-	  if(prompt(&port)) {
-	    if(feof(f))
-	      break;
-	    else
-	      continue;
-	  }
-
+		if(prompt(&port)) {
+			if(feof(f))
+				break;
+			else
+				continue;
+		}
+		
 		region_create(&r);
-
+		
 		n = parse(&r, &port, &bg);
 
 		if (n && !perform_builtin(n)) {
@@ -164,12 +163,12 @@ void loop(FILE *f) {
 		region_free(&r);
 
 		if (interactive_mode) {
-		  // TODO: Only add if command was sucessful?
-		  linenoiseHistoryAdd(port.text);
-		  free(port.text);
+			// TODO: Only add if command was sucessful?
+			linenoiseHistoryAdd(port.text);
+			free(port.text);
 		}
 		else {
-		  skip_newline(&port);
+			skip_newline(&port);
 		}
 	} while(!feof(f));
 }

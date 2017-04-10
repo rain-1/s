@@ -16,55 +16,55 @@ int fpeek(FILE *stream)
 
 int port_peek(string_port *port)
 {
-  switch(port->kind) {
+	switch(port->kind) {
     
-  case STRPORT_CHAR:
-    return port->text[port->place];
-    break;
+	case STRPORT_CHAR:
+		return port->text[port->place];
+		break;
 
-  case STRPORT_FILE:
-    return fpeek(port->fptr);
+	case STRPORT_FILE:
+		return fpeek(port->fptr);
 
-  default:
-    exit(-1);
-  }
+	default:
+		exit(-1);
+	}
 }
 
 int port_eof(string_port *port)
 {
-  switch(port->kind) {
+	switch(port->kind) {
     
-  case STRPORT_CHAR:
-    return port->text[port->place] == '\0';
-    break;
+	case STRPORT_CHAR:
+		return port->text[port->place] == '\0';
+		break;
 
-  case STRPORT_FILE:
-    return feof(port->fptr);
+	case STRPORT_FILE:
+		return feof(port->fptr);
 
-  default:
-    exit(-1);
-  }
+	default:
+		exit(-1);
+	}
 }
 
 int port_getc(string_port *port)
 {
-  int c;
+	int c;
   
-  switch(port->kind) {
+	switch(port->kind) {
     
-  case STRPORT_CHAR:
-    c = port->text[port->place];
+	case STRPORT_CHAR:
+		c = port->text[port->place];
 
-    if(c != '\0') {
-      port->place++;
-    }
+		if(c != '\0') {
+			port->place++;
+		}
     
-    return c;
+		return c;
 
-  case STRPORT_FILE:
-    return fgetc(port->fptr);
+	case STRPORT_FILE:
+		return fgetc(port->fptr);
 
-  default:
-    exit(-1);
-  }
+	default:
+		exit(-1);
+	}
 }
