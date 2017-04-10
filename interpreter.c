@@ -107,18 +107,21 @@ void interpret(struct AST* n)
 	}
 }
 
-void prompt(string_port *port)
+int prompt(string_port *port)
 {
   char *line;
   
   if (interactive_mode) {
     if((line = linenoise(geteuid() == 0 ? "s# " : "s$ ")) != NULL) {
       *port = (string_port){ .kind=STRPORT_CHAR, .text=line, .place=0 };
+      return 0;
     }
     else {
-      exit(0);
+      return 1;
     }
   }
+  
+  return 0;
 }
 
 void loop(FILE *f) {
@@ -134,8 +137,14 @@ void loop(FILE *f) {
 	  port = (string_port){ .kind=STRPORT_FILE, .fptr=f };
 	}
 	
+	
 	do {
-		prompt(&port);
+	  if(prompt(&port)) {
+	    if(feof(f))
+	      break;
+	    else
+	      continue;
+	  }
 
 		region_create(&r);
 

@@ -26,7 +26,7 @@ in a terminal you will be given an interactive shell prompt like this:
 .Ed
 .Pp
 .Sh SYNTAX
-The lexical syntax of the shell language is very strictly tokenized based on spaces. Variables may occur inside tokens with ${FOO} syntax, the {}'s are option.
+The lexical syntax of the shell language is very strictly tokenized based on spaces. Variables may occur inside tokens with ${FOO} syntax, the {}'s are optional.
 
 The
 .Em #
@@ -46,7 +46,6 @@ At the end of a line you can specify that job should be run in the background wi
 .Em &
 
 .Sh BUILTINS
-The builtins will print warnings when used interactively but print errors and exit immediately when used in a script.
 
 .Nm cd
 .Op Ar directory
@@ -57,3 +56,8 @@ The builtins will print warnings when used interactively but print errors and ex
 
 .Nm unset
 .Ar variable
+
+.Nm source
+.Ar filename
+
+If there is an error the builtins will cause the script to exit immediately, in interactive mode a warning is printed.
