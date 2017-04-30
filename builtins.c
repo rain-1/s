@@ -28,6 +28,8 @@ int perform_builtin(struct AST *n)
 			builtin_unset(n->node.tokens);
 		else if (!strcmp("source", n->node.tokens[0]))
 			builtin_source(n->node.tokens);
+		else if (!strcmp("exit", n->node.tokens[0]))
+			builtin_exit(n->node.tokens);
 		else return 0;
 
 		return 1;
@@ -86,4 +88,12 @@ void builtin_source(char **argv) {
 	interactive_mode = 0;
 	loop(f);
 	interactive_mode = mode;
+}
+
+void builtin_exit(char **argv)
+{
+	if (!argv[1])
+		exit(0);
+	else
+		exit(strtol(argv[1], NULL, 0));
 }
