@@ -46,8 +46,7 @@ char *expand_variables(region *r, char *tok, int t)
 			o = region_realloc(r, o, alloc_len);
 			memcpy(o + i, val, l);
 			i += l;
-		}
-		else {
+		} else {
 			o[i++] = *tok++;
 		}
 	}
@@ -100,6 +99,6 @@ char *read_variable_prefix(char *tok)
 		read_var_error = "length 0 variable";
 		return NULL;
 	}
-	
+
 	return tok;
 }

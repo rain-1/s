@@ -31,11 +31,10 @@ void interpret_junction(struct AST* n)
 	pid_t p;
 	int r;
 
-	if (n->type == NODE_COMMAND) {
+	if (n->type == NODE_COMMAND)
 		interpret_command(n);
-	}
 
-	switch(p = fork()) {
+	switch (p = fork()) {
 	case -1: 
 		_reporterr("fork() failure");
 		break;
@@ -64,9 +63,8 @@ void interpret_junction(struct AST* n)
 
 void interpret_pipe(struct AST* n)
 {
-	if (n->type == NODE_COMMAND) {
+	if (n->type == NODE_COMMAND)
 		interpret_command(n);
-	}
 
 	int fd[2];
 	int f;
@@ -93,7 +91,7 @@ void interpret_pipe(struct AST* n)
 
 void interpret(struct AST* n)
 {
-	switch(n->type) {
+	switch (n->type) {
 	case NODE_COMMAND:
 		interpret_command(n);
 		break;
@@ -110,43 +108,42 @@ void interpret(struct AST* n)
 int prompt(string_port *port)
 {
 	char *line;
-	
+
 	if (interactive_mode) {
-		if((line = linenoise(geteuid() == 0 ? "s# " : "s$ ")) != NULL) {
+		if ((line = linenoise(geteuid() == 0 ? "s# " : "s$ "))) {
 			*port = (string_port){ .kind=STRPORT_CHAR, .text=line, .place=0 };
 			return 0;
 		}
-		
+
 		return 1;
 	}
-	
+
 	return 0;
 }
 
-void loop(FILE *f) {
+void loop(FILE *f)
+{
 	pid_t p;
 	int bg;
 	region r;
 	struct AST* n;
 	int status;
-	
+
 	string_port port;
-	
-	if (!interactive_mode) {
+
+	if (!interactive_mode)
 		port = (string_port){ .kind=STRPORT_FILE, .fptr=f };
-	}
-	
-	
+
 	do {
-		if(prompt(&port)) {
-			if(feof(f))
+		if (prompt(&port)) {
+			if (feof(f))
 				break;
 			else
 				continue;
 		}
-		
+
 		region_create(&r);
-		
+
 		n = parse(&r, &port, &bg);
 
 		if (n && !perform_builtin(n)) {
@@ -155,9 +152,8 @@ void loop(FILE *f) {
 				_reporterr("== SHOULD NEVER GET HERE ==");
 			}
 
-			if (!bg) {
+			if (!bg)
 				waitpid(p, &status, 0);
-			}
 		}
 
 		region_free(&r);
@@ -166,9 +162,8 @@ void loop(FILE *f) {
 			// TODO: Only add if command was sucessful?
 			linenoiseHistoryAdd(port.text);
 			free(port.text);
-		}
-		else {
+		} else {
 			skip_newline(&port);
 		}
-	} while(!feof(f));
+	} while (!feof(f));
 }

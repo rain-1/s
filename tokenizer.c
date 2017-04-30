@@ -17,7 +17,7 @@ int token_end(int chr)
 void skip_spaces(string_port *stream)
 {
 	while (!port_eof(stream) && (port_peek(stream) == ' ' || port_peek(stream) == '\t'))
-	        port_getc(stream);
+		port_getc(stream);
 }
 
 void skip_newline(string_port *stream)
@@ -40,7 +40,7 @@ int token(string_port *stream)
 
 	char *buf;
 	int l;
-	
+
 	skip_spaces(stream);
 	if (port_eof(stream) || port_peek(stream) == '\n')
 		return -1;
@@ -84,9 +84,8 @@ char** read_tokens(region *r, string_port *f)
 	tokens = region_malloc(r, sizeof(char*)*MAX_TOKS_PER_LINE);
 
 	while ((t = token(f)) != -1) {
-		if (!(tokens[i] = expand_variables(r, tok_buf, t))) {
+		if (!(tokens[i] = expand_variables(r, tok_buf, t)))
 			return NULL;
-		}
 
 		i++;
 		if (i >= MAX_TOKS_PER_LINE) {

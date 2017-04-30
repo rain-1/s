@@ -16,11 +16,9 @@ int fpeek(FILE *stream)
 
 int port_peek(string_port *port)
 {
-	switch(port->kind) {
-    
+	switch (port->kind) {
 	case STRPORT_CHAR:
 		return port->text[port->place];
-		break;
 
 	case STRPORT_FILE:
 		return fpeek(port->fptr);
@@ -32,11 +30,9 @@ int port_peek(string_port *port)
 
 int port_eof(string_port *port)
 {
-	switch(port->kind) {
-    
+	switch (port->kind) {
 	case STRPORT_CHAR:
 		return port->text[port->place] == '\0';
-		break;
 
 	case STRPORT_FILE:
 		return feof(port->fptr);
@@ -49,16 +45,14 @@ int port_eof(string_port *port)
 int port_getc(string_port *port)
 {
 	int c;
-  
-	switch(port->kind) {
-    
+
+	switch (port->kind) {
 	case STRPORT_CHAR:
 		c = port->text[port->place];
 
-		if(c != '\0') {
+		if (c != '\0')
 			port->place++;
-		}
-    
+
 		return c;
 
 	case STRPORT_FILE:
