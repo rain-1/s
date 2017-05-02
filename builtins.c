@@ -28,6 +28,8 @@ int perform_builtin(struct AST *n)
 			builtin_unset(n->node.tokens);
 		else if (!strcmp("source", n->node.tokens[0]))
 			builtin_source(n->node.tokens);
+		else if (!strcmp("exit", n->node.tokens[0]))
+			builtin_exit(n->node.tokens);
 		else return 0;
 
 		return 1;
@@ -40,44 +42,45 @@ void builtin_cd(char **args)
 {
 	char *dir;
 
-	if (!(dir = args[1])) {
+	if (!(dir = args[1]))
 		if (!(dir = getenv("HOME"))) {
 			report("invalid $HOME\n");
 			return;
 		}
-	}
 
 	if (chdir(dir)) {
 		report("could not change directory to [%s]\n", dir);
-	}
-	else {
+	} else {
 		getcwd(cwd, PATH_MAX);
 		setenv("PWD", cwd, 1);
 	}
 }
 
-void builtin_set(char **argv) {
+void builtin_set(char **argv)
+{
 	if (argv[1] && argv[2])
 		setenv(argv[1], argv[2], INT_MAX);
 	else
 		report("set requires two arguments\n");
 }
 
-void builtin_unset(char **argv) {
+void builtin_unset(char **argv)
+{
 	if (argv[1])
 		unsetenv(argv[1]);
 	else
 		report("unset requires an argument\n");
 }
 
-void builtin_source(char **argv) {
+void builtin_source(char **argv)
+{
 	FILE *f;
 	int mode;
 
 	if (!argv[1]) {
 		report("source requires an argument\n");
-	}
-	else if (!(f = fopen(argv[1], "r"))) {
+		return;
+	} else if (!(f = fopen(argv[1], "r"))) {
 		report("source open() failed\n");
 		return;
 	}
@@ -86,4 +89,12 @@ void builtin_source(char **argv) {
 	interactive_mode = 0;
 	loop(f);
 	interactive_mode = mode;
+}
+
+void builtin_exit(char **argv)
+{
+	if (!argv[1])
+		exit(0);
+	else
+		exit(strtol(argv[1], NULL, 0));
 }

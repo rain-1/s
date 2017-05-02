@@ -1,6 +1,7 @@
 int perform_builtin(struct AST *n);
 
-void builtin_cd(char **args);
-void builtin_set(char **args);
-void builtin_unset(char **args);
-void builtin_source(char **args);
+void builtin_cd(char **argv);
+void builtin_set(char **argv);
+void builtin_unset(char **argv);
+void builtin_source(char **argv);
+void builtin_exit(char **argv);

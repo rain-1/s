@@ -46,8 +46,7 @@ struct AST* parse_binop(region *r, char **tokens, NodeType ty)
 				return NULL;
 
 			return m;
-		}
-		else {
+		} else {
 			tokens++;
 		}
 	}
@@ -62,12 +61,11 @@ struct AST* parse_tokens(region *r, char **tokens, int *bg_flag)
 	while (tokens[i])
 		i++;
 
-        if (i > 0 && !strcmp("&", tokens[i-1])) {
-		*bg_flag=1;
+	if (i > 0 && !strcmp("&", tokens[i-1])) {
+		*bg_flag = 1;
 		tokens[--i] = NULL;
-	}
-	else {
-		*bg_flag=0;
+	} else {
+		*bg_flag = 0;
 	}
 
 	return parse_binop(r, tokens, NODE_DISJ);

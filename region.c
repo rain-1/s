@@ -25,11 +25,9 @@ void* region_realloc(region *r, void *v, size_t size)
 {
 	int i;
 
-	for (i = 0; i < r->len; i++) {
-		if (r->pointers[i] == v) {
+	for (i = 0; i < r->len; i++)
+		if (r->pointers[i] == v)
 			return r->pointers[i] = realloc(r->pointers[i], size);
-		}
-	}
 
 	reporterr("Unable to realloc region [%p]", v);
 }
@@ -38,9 +36,8 @@ void region_free(region *r)
 {
 	int i;
 
-	for (i = 0; i < r->len; i++) {
+	for (i = 0; i < r->len; i++)
 		free(r->pointers[i]);
-	}
 
 	free(r->pointers);
 
