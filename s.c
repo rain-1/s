@@ -33,10 +33,8 @@ int main(int argc, char **argv)
 	}
 	else {
 		f = fopen(argv[1], "r");
-		if (!f) {
+		if (!f)
 			reporterr("Could not open file <%s>!", argv[1]);
-			exit(-1);
-		}
 
 		interactive_mode = 0;
 	}

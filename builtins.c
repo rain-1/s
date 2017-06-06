@@ -49,12 +49,12 @@ void builtin_cd(char **args)
 
 	if (!(dir = args[1]))
 		if (!(dir = getenv("HOME"))) {
-			report("invalid $HOME\n");
+			report("invalid $HOME");
 			return;
 		}
 
 	if (chdir(dir)) {
-		report("could not change directory to [%s]\n", dir);
+		report("could not change directory to [%s]", dir);
 	} else {
 		getcwd(cwd, PATH_MAX);
 		setenv("PWD", cwd, 1);
@@ -66,7 +66,7 @@ void builtin_set(char **argv)
 	if (argv[1] && argv[2])
 		setenv(argv[1], argv[2], INT_MAX);
 	else
-		report("set requires two arguments\n");
+		report("set requires two arguments");
 }
 
 void builtin_unset(char **argv)
@@ -74,7 +74,7 @@ void builtin_unset(char **argv)
 	if (argv[1])
 		unsetenv(argv[1]);
 	else
-		report("unset requires an argument\n");
+		report("unset requires an argument");
 }
 
 void builtin_source(char **argv)
@@ -83,10 +83,10 @@ void builtin_source(char **argv)
 	int mode;
 
 	if (!argv[1]) {
-		report("source requires an argument\n");
+		report("source requires an argument");
 		return;
 	} else if (!(f = fopen(argv[1], "r"))) {
-		report("source open() failed\n");
+		report("source open() failed");
 		return;
 	}
 

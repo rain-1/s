@@ -58,10 +58,8 @@ int token(string_port *stream)
 				reporterr("end of file when interpreting \\");
 		}
 		l++;
-		if (l >= TOK_MAX-1) {
+		if (l >= TOK_MAX-1)
 			reporterr("Token too long!");
-			exit(-1);
-		}
 	}
 	buf[l] = '\0';
 
@@ -88,10 +86,8 @@ char** read_tokens(region *r, string_port *f)
 			return NULL;
 
 		i++;
-		if (i >= MAX_TOKS_PER_LINE) {
-			reporterr("Line too long!\n");
-			exit(-1);
-		}
+		if (i >= MAX_TOKS_PER_LINE)
+			reporterr("Line too long!");
 	}
 
 	tokens[i] = NULL;

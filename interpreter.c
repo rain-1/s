@@ -23,7 +23,7 @@ void interpret_command(struct AST* n)
 
 	execvp(n->node.tokens[0], n->node.tokens);
 
-	_reporterr("Error: Could not execute the program named [%s]\n", n->node.tokens[0]);
+	_reporterr("Error: Could not execute the program named [%s]", n->node.tokens[0]);
 }
 
 void interpret_junction(struct AST* n)
