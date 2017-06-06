@@ -15,25 +15,30 @@
 #include "interpreter.h"
 #include "builtins.h"
 
+#define LEN(X) (sizeof(X) / sizeof((X)[0]))
+
 char cwd[PATH_MAX];
+
+Builtin builtins[] = {
+	{ "cd",     &builtin_cd },
+	{ "set",    &builtin_set },
+	{ "unset",  &builtin_unset },
+	{ "source", &builtin_source },
+	{ "exit",   &builtin_exit }
+};
 
 int perform_builtin(struct AST *n)
 {
-	if (n->type == NODE_COMMAND && n->node.tokens[0]) {
-		if (!strcmp("cd", n->node.tokens[0]))
-			builtin_cd(n->node.tokens);
-		else if (!strcmp("set", n->node.tokens[0]))
-			builtin_set(n->node.tokens);
-		else if (!strcmp("unset", n->node.tokens[0]))
-			builtin_unset(n->node.tokens);
-		else if (!strcmp("source", n->node.tokens[0]))
-			builtin_source(n->node.tokens);
-		else if (!strcmp("exit", n->node.tokens[0]))
-			builtin_exit(n->node.tokens);
-		else return 0;
+	int i;
 
-		return 1;
-	}
+	if (n->type != NODE_COMMAND || !n->node.tokens[0])
+		return 0;
+
+	for (i = 0; i < LEN(builtins); i++)
+		if (!strcmp(builtins[i].name, n->node.tokens[0])) {
+			(*builtins[i].func)(n->node.tokens);
+			return 1;
+		}
 
 	return 0;
 }
