@@ -10,7 +10,9 @@ char buf[BUF_SIZE];
 
 enum { lt, gt, gtgt };
 
-int main(int argc, char **argv) {
+int
+main(int argc, char **argv)
+{
 	int mode, s;
 	char *flags;
 	FILE *fin, *fout, *ftmp;
@@ -59,9 +61,8 @@ int main(int argc, char **argv) {
 	do {
 		s = fread(buf, 1, BUF_SIZE, fin);
 
-		if (fwrite(buf, 1, s, fout) != s) {
+		if (fwrite(buf, 1, s, fout) != s)
 			fprintf(stderr, "Writing error\n");
-		}
 	} while(s != -1 && s != 0);
 
 	fclose(fout);
