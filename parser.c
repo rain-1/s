@@ -14,7 +14,8 @@ char *operator_for[] = {
 	[NODE_DISJ] = "||",
 };
 
-struct AST* parse_binop(region *r, char **tokens, NodeType ty)
+struct AST *
+parse_binop(region *r, char **tokens, NodeType ty)
 {
 	char **stokens;
 	struct AST* n;
@@ -54,7 +55,8 @@ struct AST* parse_binop(region *r, char **tokens, NodeType ty)
 	return parse_binop(r, stokens, ty-1);
 }
 
-struct AST* parse_tokens(region *r, char **tokens, int *bg_flag)
+struct AST *
+parse_tokens(region *r, char **tokens, int *bg_flag)
 {
 	int i = 0;
 
@@ -71,7 +73,8 @@ struct AST* parse_tokens(region *r, char **tokens, int *bg_flag)
 	return parse_binop(r, tokens, NODE_DISJ);
 }
 
-struct AST* parse(region *r, string_port *port, int *bg_flag)
+struct AST *
+parse(region *r, string_port *port, int *bg_flag)
 {
 	char **tokens = read_tokens(r, port);
 

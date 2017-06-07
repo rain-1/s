@@ -27,7 +27,8 @@ Builtin builtins[] = {
 	{ "exit",   &builtin_exit }
 };
 
-int perform_builtin(struct AST *n)
+int
+perform_builtin(struct AST *n)
 {
 	int i;
 
@@ -43,7 +44,8 @@ int perform_builtin(struct AST *n)
 	return 0;
 }
 
-void builtin_cd(char **args)
+void
+builtin_cd(char **args)
 {
 	char *dir;
 
@@ -61,7 +63,8 @@ void builtin_cd(char **args)
 	}
 }
 
-void builtin_set(char **argv)
+void
+builtin_set(char **argv)
 {
 	if (argv[1] && argv[2])
 		setenv(argv[1], argv[2], INT_MAX);
@@ -69,7 +72,8 @@ void builtin_set(char **argv)
 		report("set requires two arguments");
 }
 
-void builtin_unset(char **argv)
+void
+builtin_unset(char **argv)
 {
 	if (argv[1])
 		unsetenv(argv[1]);
@@ -77,7 +81,8 @@ void builtin_unset(char **argv)
 		report("unset requires an argument");
 }
 
-void builtin_source(char **argv)
+void
+builtin_source(char **argv)
 {
 	FILE *f;
 	int mode;
@@ -96,7 +101,8 @@ void builtin_source(char **argv)
 	interactive_mode = mode;
 }
 
-void builtin_exit(char **argv)
+void
+builtin_exit(char **argv)
 {
 	if (!argv[1])
 		exit(0);

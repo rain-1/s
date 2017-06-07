@@ -12,7 +12,8 @@
 char variable_name[TOK_MAX];
 char *read_var_error;
 
-char *expand_variables(region *r, char *tok, int t)
+char *
+expand_variables(region *r, char *tok, int t)
 {
 	char *stok, *o, *val;
 	int alloc_len;
@@ -55,12 +56,14 @@ char *expand_variables(region *r, char *tok, int t)
 	return o;
 }
 
-int variable_character(char c)
+int
+variable_character(char c)
 {
 	return c == '_' || ('A' <= c && c <= 'Z') || ('0' <= c && c <= '9');
 }
 
-char *read_variable_prefix(char *tok)
+char *
+read_variable_prefix(char *tok)
 {
 	int i;
 	int bracket;

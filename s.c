@@ -13,11 +13,13 @@
 #include "interpreter.h"
 #include "builtins.h"
 
-void handler_sigint(int sig) {
+void
+handler_sigint(int sig) {
   //signal(sig, SIG_IGN);
 }
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
 	int i;
 	FILE *f;
@@ -30,8 +32,7 @@ int main(int argc, char **argv)
 		f = stdin;
 
 		interactive_mode = isatty(fileno(stdin));
-	}
-	else {
+	} else {
 		f = fopen(argv[1], "r");
 		if (!f)
 			reporterr("Could not open file <%s>!", argv[1]);
