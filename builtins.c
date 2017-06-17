@@ -18,6 +18,7 @@
 #define LEN(X) (sizeof(X) / sizeof((X)[0]))
 
 char cwd[PATH_MAX];
+char owd[PATH_MAX];
 
 Builtin builtins[] = {
 	{ "cd",     &builtin_cd },
@@ -48,18 +49,30 @@ void
 builtin_cd(char **args)
 {
 	char *dir;
+	int isowd = 0;
 
-	if (!(dir = args[1]))
+	if (!(dir = args[1])) {
 		if (!(dir = getenv("HOME"))) {
 			report("invalid $HOME");
 			return;
 		}
+	} else if (strcmp(dir, "-") == 0) {
+		if (!(dir = getenv("OLDPWD"))) {
+			report("invalid $OLDPWD");
+			return;
+		}
+		isowd = 1;
+	}
 
+	getcwd(owd, PATH_MAX);
 	if (chdir(dir)) {
 		report("could not change directory to [%s]", dir);
 	} else {
 		getcwd(cwd, PATH_MAX);
 		setenv("PWD", cwd, 1);
+		setenv("OLDPWD", owd, 1);
+		if (isowd)
+			printf("%s\n", dir);
 	}
 }
 
