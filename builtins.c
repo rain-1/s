@@ -52,15 +52,11 @@ builtin_cd(char **args)
 	int isowd = 0;
 
 	if (!(dir = args[1])) {
-		if (!(dir = getenv("HOME"))) {
-			report("invalid $HOME");
-			return;
-		}
+		if (!(dir = getenv("HOME")))
+			reportret(,"invalid $HOME");
 	} else if (strcmp(dir, "-") == 0) {
-		if (!(dir = getenv("OLDPWD"))) {
-			report("invalid $OLDPWD");
-			return;
-		}
+		if (!(dir = getenv("OLDPWD")))
+			reportret(,"invalid $OLDPWD");
 		isowd = 1;
 	}
 
@@ -100,13 +96,10 @@ builtin_source(char **argv)
 	FILE *f;
 	int mode;
 
-	if (!argv[1]) {
-		report("source requires an argument");
-		return;
-	} else if (!(f = fopen(argv[1], "r"))) {
-		report("source open() failed");
-		return;
-	}
+	if (!argv[1])
+		reportret(,"source requires an argument");
+	if (!(f = fopen(argv[1], "r")))
+		reportret(,"source open() failed");
 
 	mode = interactive_mode;
 	interactive_mode = 0;
