@@ -152,6 +152,9 @@ token_rest_of_string(string_port *stream, char quote_type) {
 			
 			escape = 0;
 			l++;
+			
+			if (l >= TOK_MAX-1)
+				reporterr("String token too long!");
 		}
 	}
 
