@@ -12,7 +12,8 @@
 char variable_name[TOK_MAX];
 char *read_var_error;
 
-char *expand_variables(region *r, char *tok, int t)
+char *
+expand_variables(region *r, char *tok, int t)
 {
 	char *stok, *o, *val;
 	int alloc_len;
@@ -26,12 +27,12 @@ char *expand_variables(region *r, char *tok, int t)
 	while (*tok) {
 		if (*tok == '$') {
 			if (!(tok = read_variable_prefix(tok))) {
-				report("Problem parsing variable inside token [%s] at character [%d]. %s.\n", stok, i, read_var_error);
+				report("Problem parsing variable inside token [%s] at character [%d]. %s.", stok, i, read_var_error);
 				return NULL;
 			}
 
 			if (!(val = getenv(variable_name))) {
-				report("Reference to an undefined variable inside token [%s] at character [%d]\n", stok, i);
+				report("Reference to an undefined variable inside token [%s] at character [%d]", stok, i);
 				return NULL;
 			}
 
@@ -55,12 +56,14 @@ char *expand_variables(region *r, char *tok, int t)
 	return o;
 }
 
-int variable_character(char c)
+int
+variable_character(char c)
 {
 	return c == '_' || ('A' <= c && c <= 'Z') || ('0' <= c && c <= '9');
 }
 
-char *read_variable_prefix(char *tok)
+char *
+read_variable_prefix(char *tok)
 {
 	int i;
 	int bracket;

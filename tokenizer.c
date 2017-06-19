@@ -9,18 +9,21 @@
 
 char tok_buf[TOK_MAX];
 
-int token_end(int chr)
+int
+token_end(int chr)
 {
 	return chr == ' ' || chr == '\t' || chr == '\n' || chr == '#';
 }
 
-void skip_spaces(string_port *stream)
+void
+skip_spaces(string_port *stream)
 {
 	while (!port_eof(stream) && (port_peek(stream) == ' ' || port_peek(stream) == '\t'))
 		port_getc(stream);
 }
 
-void skip_newline(string_port *stream)
+void
+skip_newline(string_port *stream)
 {
 	skip_spaces(stream);
 	if (port_peek(stream) == '\n')
@@ -29,12 +32,14 @@ void skip_newline(string_port *stream)
 		return;
 }
 
-void skip_comment(string_port *stream)
+void
+skip_comment(string_port *stream)
 {
 	while (!port_eof(stream) && port_getc(stream) != '\n');
 }
 
-int token(string_port *stream)
+int
+token(string_port *stream)
 {
 	// TODO strings
 
@@ -58,10 +63,8 @@ int token(string_port *stream)
 				reporterr("end of file when interpreting \\");
 		}
 		l++;
-		if (l >= TOK_MAX-1) {
+		if (l >= TOK_MAX-1)
 			reporterr("Token too long!");
-			exit(-1);
-		}
 	}
 	buf[l] = '\0';
 
@@ -74,7 +77,8 @@ int token(string_port *stream)
 	return l;
 }
 
-char** read_tokens(region *r, string_port *f)
+char **
+read_tokens(region *r, string_port *f)
 {
 	char **tokens;
 	int i, t;
@@ -88,10 +92,8 @@ char** read_tokens(region *r, string_port *f)
 			return NULL;
 
 		i++;
-		if (i >= MAX_TOKS_PER_LINE) {
-			reporterr("Line too long!\n");
-			exit(-1);
-		}
+		if (i >= MAX_TOKS_PER_LINE)
+			reporterr("Line too long!");
 	}
 
 	tokens[i] = NULL;

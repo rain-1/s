@@ -4,7 +4,8 @@
 #include "stringport.h"
 
 // from stackoverflow.com/questions/2082743/c-equivalent-to-fstreams-peek
-int fpeek(FILE *stream)
+int
+fpeek(FILE *stream)
 {
 	int c;
 
@@ -14,7 +15,8 @@ int fpeek(FILE *stream)
 	return c;
 }
 
-int port_peek(string_port *port)
+int
+port_peek(string_port *port)
 {
 	switch (port->kind) {
 	case STRPORT_CHAR:
@@ -24,11 +26,12 @@ int port_peek(string_port *port)
 		return fpeek(port->fptr);
 
 	default:
-		exit(-1);
+		exit(1);
 	}
 }
 
-int port_eof(string_port *port)
+int
+port_eof(string_port *port)
 {
 	switch (port->kind) {
 	case STRPORT_CHAR:
@@ -38,11 +41,12 @@ int port_eof(string_port *port)
 		return feof(port->fptr);
 
 	default:
-		exit(-1);
+		exit(1);
 	}
 }
 
-int port_getc(string_port *port)
+int
+port_getc(string_port *port)
 {
 	int c;
 
@@ -59,6 +63,6 @@ int port_getc(string_port *port)
 		return fgetc(port->fptr);
 
 	default:
-		exit(-1);
+		exit(1);
 	}
 }

@@ -1,3 +1,8 @@
+typedef struct {
+	char *name;
+	void (*func)(char **);
+} Builtin;
+
 int perform_builtin(struct AST *n);
 
 void builtin_cd(char **argv);

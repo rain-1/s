@@ -17,16 +17,18 @@
 
 int interactive_mode = 0;
 
-void interpret_command(struct AST* n)
+void
+interpret_command(struct AST* n)
 {
 	assert(n->type == NODE_COMMAND);
 
 	execvp(n->node.tokens[0], n->node.tokens);
 
-	_reporterr("Error: Could not execute the program named [%s]\n", n->node.tokens[0]);
+	_reporterr("Error: Could not execute the program named [%s]", n->node.tokens[0]);
 }
 
-void interpret_junction(struct AST* n)
+void
+interpret_junction(struct AST* n)
 {
 	pid_t p;
 	int r;
@@ -61,7 +63,8 @@ void interpret_junction(struct AST* n)
 	}
 }
 
-void interpret_pipe(struct AST* n)
+void
+interpret_pipe(struct AST* n)
 {
 	if (n->type == NODE_COMMAND)
 		interpret_command(n);
@@ -89,7 +92,8 @@ void interpret_pipe(struct AST* n)
 	}
 }
 
-void interpret(struct AST* n)
+void
+interpret(struct AST* n)
 {
 	switch (n->type) {
 	case NODE_COMMAND:
@@ -105,7 +109,8 @@ void interpret(struct AST* n)
 	}
 }
 
-int prompt(string_port *port)
+int
+prompt(string_port *port)
 {
 	char *line;
 
@@ -121,7 +126,8 @@ int prompt(string_port *port)
 	return 0;
 }
 
-void loop(FILE *f)
+void
+loop(FILE *f)
 {
 	pid_t p;
 	int bg;

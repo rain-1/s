@@ -4,14 +4,16 @@
 #include "region.h"
 #include "reporting.h"
 
-void region_create(region *r)
+void
+region_create(region *r)
 {
 	r->len = 0;
 	r->alloc_len = 2;
 	r->pointers = malloc(sizeof(void*)*r->alloc_len);
 }
 
-void* region_malloc(region *r, size_t size)
+void *
+region_malloc(region *r, size_t size)
 {
 	if (r->len >= r->alloc_len) {
 		r->alloc_len <<= 1;
@@ -21,7 +23,8 @@ void* region_malloc(region *r, size_t size)
 	return r->pointers[r->len++] = malloc(size);
 }
 
-void* region_realloc(region *r, void *v, size_t size)
+void *
+region_realloc(region *r, void *v, size_t size)
 {
 	int i;
 
