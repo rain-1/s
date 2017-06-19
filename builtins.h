@@ -10,3 +10,4 @@ void builtin_set(char **argv);
 void builtin_unset(char **argv);
 void builtin_source(char **argv);
 void builtin_exit(char **argv);
+void builtin_eval(char **argv);

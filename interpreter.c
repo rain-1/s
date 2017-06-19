@@ -127,14 +127,33 @@ prompt(string_port *port)
 }
 
 void
-loop(FILE *f)
-{
+parse_and_execute(string_port *port) {
 	pid_t p;
-	int bg;
 	region r;
 	struct AST* n;
+	int bg;
 	int status;
+	
+	region_create(&r);
+	
+	n = parse(&r, port, &bg);
+	
+	if (n && !perform_builtin(n)) {
+		if (!(p = fork())) {
+			interpret(n);
+			_reporterr("== SHOULD NEVER GET HERE ==");
+		}
+		
+		if (!bg)
+			waitpid(p, &status, 0);
+	}
+	
+	region_free(&r);
+}
 
+void
+loop(FILE *f)
+{
 	string_port port;
 
 	if (!interactive_mode)
@@ -147,23 +166,9 @@ loop(FILE *f)
 			else
 				continue;
 		}
-
-		region_create(&r);
-
-		n = parse(&r, &port, &bg);
-
-		if (n && !perform_builtin(n)) {
-			if (!(p = fork())) {
-				interpret(n);
-				_reporterr("== SHOULD NEVER GET HERE ==");
-			}
-
-			if (!bg)
-				waitpid(p, &status, 0);
-		}
-
-		region_free(&r);
-
+		
+		parse_and_execute(&port);
+		
 		if (interactive_mode) {
 			// TODO: Only add if command was sucessful?
 			linenoiseHistoryAdd(port.text);
