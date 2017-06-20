@@ -1,0 +1,26 @@
+# What is the grammar of tokens?
+
+TOK ::= WORD | STRING
+
+## words
+
+At the most basic level words are just characters delimited by spaces.
+More specifically by any of the chars listed in token_end.
+
+All of: space, tab, newline, # end a token
+
+You can use \ inside a word to put one of those ending characters (or a backslash) in it.
+
+WORD ::= WORDCH +
+
+WORDCH ::= '\' <any char>
+         | <any char except '\\' ' ' '\t' '\n' '#'>
+
+## strings
+
+STRING ::= SINGLE_QUOTED | DOUBLE_QUOTED
+
+DOUBLE_QUOTED ::= '"' DQ_INNER '"'
+
+DQ_INNER ::= '\\' <anychar>
+           | <any char except '\\' '"'>

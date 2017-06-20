@@ -11,184 +11,182 @@
 char tok_buf[TOK_MAX];
 
 int
+is_escape_char(int chr)
+{
+	return chr == '\\' || chr == 't' || chr == 'n' || chr == 'r' ||
+		chr == '"' || chr == '\'';
+}
+
+int
 token_end(int chr)
 {
-	return chr == ' ' || chr == '\t' || chr == '\n' || chr == '#';
+	return chr == ' ' || chr == '\t' || chr == '\n' || chr == '\r' ||
+		chr == '#';
 }
 
 void
 skip_spaces(string_port *stream)
 {
-	while (!port_eof(stream) && (port_peek(stream) == ' ' || port_peek(stream) == '\t'))
+	while (!port_eof(stream)
+	       && (port_peek(stream) == ' ' ||
+		   port_peek(stream) == '\t')) {
 		port_getc(stream);
+	}
 }
 
 void
-skip_newline(string_port *stream)
-{
+skip_newline(string_port *stream) {
 	skip_spaces(stream);
+
 	if (port_peek(stream) == '\n')
 		port_getc(stream);
-	else
-		return;
-}
-
-void
-skip_comment(string_port *stream)
-{
-	while (!port_eof(stream) && port_getc(stream) != '\n');
 }
 
 int
-token(string_port *stream, int *out_should_expand)
-{
-	int l;
+read_token(string_port *stream, int *out_should_expand) {
+	// returns -1 on failure
+	// length of the token on success
+	//
+	// a word token cannot have length 0
+	// but a string token can
+
+	int len = 0;
 	char c;
 
-	*out_should_expand = 1; // everything has variables expanded except for single ' strings
+	char quote;
+	int escape_char;
+
+	// TOK(c) adds a character c to the
+	// buffer, erroring if we went over the
+	// limit
+#define TOK(c)					\
+	if (len >= TOK_MAX-1)			\
+		reporterr("Token too long!");	\
+	tok_buf[len++] = c
+	
+	*out_should_expand = 1;
 
 	skip_spaces(stream);
-	if (port_eof(stream) || port_peek(stream) == '\n')
+	if (port_eof(stream) || port_peek(stream) == '\n') // TODO: understand and explain why do we die on \n?
 		return -1;
+	
+	goto st_tok; // parse using a state machine
+	
+ st_tok:
+	c = port_getc(stream);
 
-	l = 0;
-	// WARNING: fpeek must be done before feof
-	//          otherwise it may not succeed
-	while (!token_end(port_peek(stream)) && !port_eof(stream)) {
-		c = port_getc(stream);
+	if (c == '"' || c == '\'') {
+		quote = c;
+		escape_char = 0;
 		
+		goto st_string;
+	}
+	else {
+		TOK(c);
+		goto st_word;
+	}
+
+ st_word:
+	if (port_eof(stream) || token_end(port_peek(stream))) {
+		// we finished reading the word
+		// ensure it has nonzero length
+		// then return
+
+		if (len)
+			goto st_accept;
+		else
+			return -1;
+	}
+	else {
+		c = port_getc(stream);
+
 		if (c == '\\') {
-			tok_buf[l] = port_getc(stream);
-			l++;
-			
-			port_peek(stream);
 			if (port_eof(stream))
-				reporterr("end of file when interpreting \\");
-		}
-		else if (c == '"' || c == '\'') {
-			if (c == '\'') {
-				*out_should_expand = 0;
-			}
-
-			l = token_rest_of_string(stream, c);
-			
-			if(l == -1)
 				return -1;
-			
-			break;
+
+			c = port_getc(stream);
+			TOK(c);
 		}
 		else {
-			tok_buf[l] = c;
-			l++;
+			TOK(c);
 		}
 		
-		if (l >= TOK_MAX-1)
-			reporterr("Token too long!");
+		goto st_word;
 	}
-	tok_buf[l] = '\0';
-	
-	if (port_peek(stream) == '#')
-		skip_comment(stream);
 
-	if (!l)
+ st_string:
+	if (port_eof(stream)) {
 		return -1;
-
-	return l;
-}
-
-int
-token_rest_of_string(string_port *stream, char quote_type) {
-	// This is an auxilliary helper function for "token" which parses a single token
-	// It it called when token has seen an open quote (either " or ')
-	// It's purpose is to read the rest of the string into buf
-	// until it sees a close quote.
-
-	int l = 0;
-	int escape = 0;
-	char c;
-	
-	while (!port_eof(stream)) {
-		c = port_getc(stream);
-		
-		if (c == quote_type && !escape) {
-		        return l;
-		}
-		else if (c == '\\') {
-			escape = 1;
-			continue;
-		}
-		else {
-			if (escape) {
-				switch (c) {
-				case '\\':
-					tok_buf[l] = '\\';
-					break;
-					
-				case 'a':
-					tok_buf[l] = '\a';
-					break;
-					
-				case 'n':
-					tok_buf[l] = '\n';
-					break;
-					
-				case 'r':
-					tok_buf[l] = '\r';
-					break;
-					
-				case 't':
-					tok_buf[l] = '\t';
-					break;
-					
-				default:
-					// TODO: how about an error for escaping something that
-					// doesn't need to be escaped
-					tok_buf[l] = c;
-				}
-			}
-			else {
-				tok_buf[l] = c;
-			}
-			
-			escape = 0;
-			l++;
-			
-			if (l >= TOK_MAX-1)
-				reporterr("String token too long!");
-		}
 	}
 
-	// the input ended before a close quote
-	return -1;
+	c = port_getc(stream);
+
+	if (c == quote) {
+		goto st_accept;
+	}
+	else if (c == '\\') {
+		escape_char = 1;
+		goto st_string;
+	}
+	else if (escape_char && is_escape_char(c)) {
+		escape_char = 0;
+		switch(c) {
+		case 't':
+			TOK('\t');
+			break;
+		case '\\':
+			TOK('\\');
+			break;
+		case 'n':
+			TOK('\n');
+			break;
+		case 'r':
+			TOK('\r');
+			break;
+		default:
+			reporterr("impossible escape");
+		}
+		goto st_string;
+	}
+	else {
+		if (escape_char) {
+			reporterr("escaped a non-escapable char");
+		}
+		TOK(c);
+		goto st_string;
+	}
+	
+ st_accept:
+	tok_buf[len] = '\0';
+	
+	return len;
 }
 
-char **
-read_tokens(region *r, string_port *f)
-{
+char**
+read_tokens(region *r, string_port *stream) {
 	char **tokens;
-	int i, t;
-	int should_expand;
+	int i = 0;
 
-	i = 0;
-
+	int len, should_expand;
+	
 	tokens = region_malloc(r, sizeof(char*)*MAX_TOKS_PER_LINE);
 
-	while ((t = token(f, &should_expand)) != -1) {
+	while ((len = read_token(stream, &should_expand)) != -1) {
 		if (should_expand) {
-			if (!(tokens[i] = expand_variables(r, tok_buf, t)))
+			if (!(tokens[i] = expand_variables(r, tok_buf, len)))
 				return NULL;
 		}
 		else {
-			tokens[i] = region_malloc(r, t+1);
-			strncpy(tokens[i], tok_buf, t);
+			tokens[i] = region_malloc(r, len + 1);
+			strncpy(tokens[i], tok_buf, len);
 		}
 
 		i++;
 		if (i >= MAX_TOKS_PER_LINE)
 			reporterr("Line too long!");
 	}
-
+	
 	tokens[i] = NULL;
-
+	
 	return tokens;
 }
