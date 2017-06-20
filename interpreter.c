@@ -152,7 +152,7 @@ parse_and_execute(string_port *port) {
 }
 
 void
-loop(FILE *f)
+interpreter_loop(FILE *f)
 {
 	string_port port;
 

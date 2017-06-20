@@ -104,7 +104,7 @@ builtin_source(char **argv)
 
 	mode = interactive_mode;
 	interactive_mode = 0;
-	loop(f);
+	interpreter_loop(f);
 	interactive_mode = mode;
 }
 

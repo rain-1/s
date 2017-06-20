@@ -39,7 +39,7 @@ main(int argc, char **argv)
 		interactive_mode = 0;
 	}
 
-	loop(f);
+	interpreter_loop(f);
 
 	return 0;
 }
