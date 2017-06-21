@@ -127,21 +127,60 @@ prompt(string_port *port)
 }
 
 void
-parse_and_execute(string_port *port) {
+drain_pipe(int fd, char **out) {
+	int len = 0;
+	int size = 1000;
+	char *str = malloc(size);
+	int n;
+	
+	while ((n = read(fd, str + len, size - 1 - len)) > 0) {
+		len += n;
+		
+		if (len > size/2) {
+			size *= 2;
+			str = realloc(str, size);
+		}
+	}
+	
+	str[len] = '\0';
+	
+	*out = str;
+}
+
+void
+parse_and_execute(string_port *port, char **string_capture) {
 	pid_t p;
 	region r;
-	struct AST* n;
+	struct AST *n;
 	int bg;
 	int status;
+
+	int fd[2];
 	
 	region_create(&r);
 	
 	n = parse(&r, port, &bg);
 	
 	if (n && !perform_builtin(n)) {
+		if (string_capture) {
+			pipe(&fd[0]);
+		}
+		
 		if (!(p = fork())) {
+			if (string_capture) {
+				close(fd[0]);
+				close(STDOUT_FILENO);
+				dup(fd[1]);
+			}
+			
 			interpret(n);
 			_reporterr("== SHOULD NEVER GET HERE ==");
+		}
+		
+		if (string_capture) {
+			close(fd[1]);
+			drain_pipe(fd[0], string_capture);
+			close(fd[0]);
 		}
 		
 		if (!bg)
@@ -167,7 +206,7 @@ interpreter_loop(FILE *f)
 				continue;
 		}
 		
-		parse_and_execute(&port);
+		parse_and_execute(&port, NULL);
 		
 		if (interactive_mode) {
 			// TODO: Only add if command was sucessful?
