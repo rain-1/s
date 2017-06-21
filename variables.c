@@ -59,7 +59,10 @@ expand_variables(region *r, char *tok, int t)
 int
 variable_character(char c)
 {
-	return c == '_' || ('A' <= c && c <= 'Z') || ('0' <= c && c <= '9');
+	return c == '_'
+		|| ('A' <= c && c <= 'Z')
+		|| ('a' <= c && c <= 'a')
+		|| ('0' <= c && c <= '9');
 }
 
 char *
