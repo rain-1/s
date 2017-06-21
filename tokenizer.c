@@ -78,6 +78,9 @@ read_token(string_port *stream, int *out_should_expand) {
 	if (c == '"' || c == '\'') {
 		quote = c;
 		escape_char = 0;
+
+		if (c == '\'')
+			*out_should_expand = 0;
 		
 		goto st_string;
 	}
@@ -178,7 +181,7 @@ read_tokens(region *r, string_port *stream) {
 		}
 		else {
 			tokens[i] = region_malloc(r, len + 1);
-			strncpy(tokens[i], tok_buf, len);
+			strncpy(tokens[i], tok_buf, len + 1);
 		}
 
 		i++;
