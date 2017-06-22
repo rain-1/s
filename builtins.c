@@ -118,22 +118,20 @@ builtin_exit(char **argv)
 }
 
 void
-builtin_eval(char **argv) {
+builtin_eval(char **argv)
+{
 	string_port port;
 	char *result = NULL;
-	
-	if (argv[1] && argv[2]) {
-		port = (string_port){ .kind=STRPORT_CHAR, .text=argv[2], .place=0 };
-		parse_and_execute(&port, &result);
-		if (result) {
-			setenv(argv[1], result, 1);
-			free(result);
-		}
-		else {
-			setenv(argv[1], "[fail]", 1);
-		}
-	}
-	else {
-		report("eval requires two+ arguments: a var and a command");
+
+	if (!argv[1] || !argv[2])
+		reportret(,"eval requires two+ arguments: a var and a command");
+
+	port = (string_port){ .kind=STRPORT_CHAR, .text=argv[2], .place=0 };
+	parse_and_execute(&port, &result);
+	if (result) {
+		setenv(argv[1], result, 1);
+		free(result);
+	} else {
+		setenv(argv[1], "[fail]", 1);
 	}
 }

@@ -47,13 +47,12 @@ interpret_junction(struct AST* n)
 	default:
 		waitpid(p, &r, 0);
 
-		// DISJ and CONJ are dual
-		// xor flips the boolean for us depending on the case we're in
-		//
-		// so: in a disj (conj) node we exit right away
-		//     if the exit status is (isn't) true
-		//     otherwise continue executing the disj (conj)
-		//     chain.
+		/* DISJ and CONJ are dual */
+		/* xor flips the boolean for us depending on the case we're in */
+		/* so: in a disj (conj) node we exit right away */
+		/*     if the exit status is (isn't) true */
+		/*     otherwise continue executing the disj (conj) */
+		/*     chain. */
 
 		if ((!WEXITSTATUS(r)) ^ (n->type == NODE_CONJ)) {
 			_exit(WEXITSTATUS(r));
@@ -78,13 +77,13 @@ interpret_pipe(struct AST* n)
 	f = fork();
 	if (f == -1) {
 		_reporterr("fork() failure");
-	} else if (f == 0) { // child
+	} else if (!f) { /* child */
 		close(fd[0]);
 		close(STDOUT_FILENO);
 		dup(fd[1]);
 		close(fd[1]);
 		interpret_command(n->node.child.l);
-	} else {	     // parent
+	} else {         /* parent */
 		close(fd[1]);
 		close(STDIN_FILENO);
 		dup(fd[0]);
@@ -128,28 +127,30 @@ prompt(string_port *port)
 }
 
 void
-drain_pipe(int fd, char **out) {
+drain_pipe(int fd, char **out)
+{
 	int len = 0;
 	int size = 1000;
 	char *str = malloc(size);
 	int n;
-	
+
 	while ((n = read(fd, str + len, size - 1 - len)) > 0) {
 		len += n;
-		
+
 		if (len > size/2) {
 			size *= 2;
 			str = realloc(str, size);
 		}
 	}
-	
+
 	str[len] = '\0';
-	
+
 	*out = str;
 }
 
 void
-parse_and_execute(string_port *port, char **string_capture) {
+parse_and_execute(string_port *port, char **string_capture)
+{
 	pid_t p;
 	region r;
 	struct AST *n;
@@ -157,37 +158,36 @@ parse_and_execute(string_port *port, char **string_capture) {
 	int status;
 
 	int fd[2];
-	
+
 	region_create(&r);
-	
+
 	n = parse(&r, port, &bg);
-	
+
 	if (n && !perform_builtin(n)) {
-		if (string_capture) {
+		if (string_capture)
 			pipe(&fd[0]);
-		}
-		
+
 		if (!(p = fork())) {
 			if (string_capture) {
 				close(fd[0]);
 				close(STDOUT_FILENO);
 				dup(fd[1]);
 			}
-			
+
 			interpret(n);
 			_reporterr("== SHOULD NEVER GET HERE ==");
 		}
-		
+
 		if (string_capture) {
 			close(fd[1]);
 			drain_pipe(fd[0], string_capture);
 			close(fd[0]);
 		}
-		
+
 		if (!bg)
 			waitpid(p, &status, 0);
 	}
-	
+
 	region_free(&r);
 }
 
@@ -208,11 +208,11 @@ interpreter_loop(FILE *f)
 			else
 				break;
 		}
-		
+
 		parse_and_execute(&port, NULL);
-		
+
 		if (interactive_mode) {
-			// TODO: Only add if command was sucessful?
+			/* TODO: Only add if command was sucessful? */
 			linenoiseHistoryAdd(port.text);
 			free(port.text);
 		} else {

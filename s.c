@@ -14,8 +14,9 @@
 #include "builtins.h"
 
 void
-handler_sigint(int sig) {
-  //signal(sig, SIG_IGN);
+handler_sigint(int sig)
+{
+  /* signal(sig, SIG_IGN); */
 }
 
 int

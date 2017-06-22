@@ -68,24 +68,21 @@ variable_character(char c)
 char *
 read_variable_prefix(char *tok)
 {
-	int i;
-	int bracket;
+	int i = 0;
+	int bracket = 0;
 
 	assert(*tok == '$');
 	tok++;
 
-	// NOTE: We don't bother to bounds check here
-	// because tok is already <= the size of a token
-	//
-	// ...lets see if this ever bites?
+	/* NOTE: We don't bother to bounds check here */
+	/* because tok is already <= the size of a token */
+	/* ...lets see if this ever bites? */
 
-	bracket = 0;
 	if (*tok == '{') {
 		bracket = 1;
 		tok++;
 	}
 
-	i = 0;
 	while (variable_character(*tok)) {
 		if (i == 0 && ('0' <= *tok && *tok <= '9')) {
 			read_var_error = "var must not start with a digit";

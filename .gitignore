@@ -1,4 +1,5 @@
 test_commands
+*.swp
 *~
 *.o
 t1
@@ -13,3 +14,4 @@ linenoise
 s
 supporting/*
 out/*
+tags

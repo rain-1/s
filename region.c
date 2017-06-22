@@ -35,7 +35,8 @@ region_realloc(region *r, void *v, size_t size)
 	reporterr("Unable to realloc region [%p]", v);
 }
 
-void region_free(region *r)
+void
+region_free(region *r)
 {
 	int i;
 
