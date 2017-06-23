@@ -85,15 +85,12 @@ st_tok:
 st_word:
 	/* we finished reading the word ensure it has nonzero length then return */
 	if (port_eof(stream) || token_end(port_peek(stream))) {
-
 		if (len)
 			goto st_accept;
 		else
 			return -1;
 	} else {
-		c = port_getc(stream);
-
-		if (c == '\\') {
+		if ((c = port_getc(stream)) == '\\') {
 			if (port_eof(stream))
 				return -1;
 
@@ -111,7 +108,6 @@ st_string:
 		return -1;
 
 	c = port_getc(stream);
-
 	if (c == quote) {
 		goto st_accept;
 	} else if (c == '\\') {

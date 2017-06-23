@@ -21,3 +21,7 @@ extern int interactive_mode;
 	if (!interactive_mode) \
 		exit(1); \
 }
+#define reportvar(V, M, ...) { \
+	V = M;                 \
+	return NULL;           \
+}
