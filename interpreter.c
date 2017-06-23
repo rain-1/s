@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <assert.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
@@ -200,10 +201,12 @@ interpreter_loop(FILE *f)
 
 	do {
 		if (prompt(&port)) {
-			if (feof(f))
-				break;
-			else
+			if (errno == EAGAIN) {
+				errno = 0;
 				continue;
+			}
+			else
+				break;
 		}
 		
 		parse_and_execute(&port, NULL);
