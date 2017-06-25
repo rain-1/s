@@ -77,6 +77,17 @@ st_tok:
 			*out_should_expand = 0;
 
 		goto st_string;
+	} else if (c == '~') {
+		TOK('$');
+		TOK('{');
+		TOK('H');
+		TOK('O');
+		TOK('M');
+		TOK('E');
+		TOK('}');
+		goto st_word_continue;
+	} else if (c == '\\') {
+		goto st_word;
 	} else {
 		goto st_word;
 	}
@@ -91,7 +102,8 @@ st_word:
 	}
 
 	TOK(c);
-	
+
+st_word_continue:
 	if (port_eof(stream) || token_end(port_peek(stream))) {
 		if (len)
 			goto st_accept;
