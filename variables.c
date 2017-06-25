@@ -24,16 +24,16 @@ expand_variables(region *r, char *tok, int t)
 	while (*tok) {
 		if (*tok == '$') {
 			if (!(tok = read_variable_prefix(tok)))
-				reportret(NULL, "Problem parsing variable inside token [%s] at character [%d]. %s.", stok, i, varerr);
+				reportret(NULL, "problem parsing variable inside token '%s' at character %d: %s", stok, i, varerr);
 
 			if (!(val = getenv(varname)))
-				reportret(NULL, "Reference to an undefined variable inside token [%s] at character [%d]", stok, i);
+				reportret(NULL, "reference to an undefined variable inside token '%s' at character %d", stok, i);
 
 			l = strlen(val);
 			alloc_len += l;
 
 			if (alloc_len > TOK_MAX)
-				reportret(NULL, "Variable expansion blew up token size too large.");
+				reportret(NULL, "variable expansion blew up token size too large");
 
 			o = region_realloc(r, o, alloc_len);
 			memcpy(o + i, val, l);

@@ -11,7 +11,7 @@
 /* TOK(c) adds a character c to the buffer, erroring if we went over the limit */
 #define TOK(c)					\
 	if (len >= TOK_MAX-1)			\
-		reporterr("Token too long!");	\
+		reporterr("token too long");	\
 	tok_buf[len++] = c
 
 char tok_buf[TOK_MAX];
@@ -165,7 +165,7 @@ read_tokens(region *r, string_port *stream)
 		}
 
 		if (++i >= MAX_TOKS_PER_LINE)
-			reporterr("Line too long!");
+			reporterr("line too long");
 	}
 
 	tokens[i] = NULL;

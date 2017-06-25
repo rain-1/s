@@ -32,7 +32,7 @@ region_realloc(region *r, void *v, size_t size)
 		if (r->pointers[i] == v)
 			return r->pointers[i] = realloc(r->pointers[i], size);
 
-	reporterr("Unable to realloc region [%p]", v);
+	reporterr("unable to realloc region [%p]", v);
 }
 
 void

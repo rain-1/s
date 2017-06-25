@@ -54,16 +54,16 @@ builtin_cd(char **args)
 
 	if (!(dir = args[1])) {
 		if (!(dir = getenv("HOME")))
-			reportret(,"invalid $HOME");
+			reportret(,"cd: invalid $HOME");
 	} else if (strcmp(dir, "-") == 0) {
 		if (!(dir = getenv("OLDPWD")))
-			reportret(,"invalid $OLDPWD");
+			reportret(,"cd: invalid $OLDPWD");
 		isowd = 1;
 	}
 
 	getcwd(owd, PATH_MAX);
 	if (chdir(dir)) {
-		report("could not change directory to [%s]", dir);
+		report("cd: %s: could not change to directory", dir);
 	} else {
 		getcwd(cwd, PATH_MAX);
 		setenv("PWD", cwd, 1);
@@ -79,7 +79,7 @@ builtin_set(char **argv)
 	if (argv[1] && argv[2])
 		setenv(argv[1], argv[2], INT_MAX);
 	else
-		report("set requires two arguments");
+		report("set: two arguments required");
 }
 
 void
@@ -88,7 +88,7 @@ builtin_unset(char **argv)
 	if (argv[1])
 		unsetenv(argv[1]);
 	else
-		report("unset requires an argument");
+		report("unset: argument required");
 }
 
 void
@@ -98,9 +98,9 @@ builtin_source(char **argv)
 	int mode;
 
 	if (!argv[1])
-		reportret(,"source requires an argument");
+		reportret(,"source: argument required");
 	if (!(f = fopen(argv[1], "r")))
-		reportret(,"source open() failed");
+		reportret(,"source: %s: could not load file", argv[1]);
 
 	mode = interactive_mode;
 	interactive_mode = 0;
@@ -124,7 +124,7 @@ builtin_eval(char **argv)
 	char *result = NULL;
 
 	if (!argv[1] || !argv[2])
-		reportret(,"eval requires two+ arguments: a var and a command");
+		reportret(,"eval: two or more arguments required");
 
 	port = (string_port){ .kind=STRPORT_CHAR, .text=argv[2], .place=0 };
 	parse_and_execute(&port, &result);

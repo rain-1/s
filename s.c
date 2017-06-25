@@ -35,7 +35,7 @@ main(int argc, char **argv)
 		interactive_mode = isatty(fileno(stdin));
 	} else {
 		if (!(f = fopen(argv[1], "r")))
-			reporterr("Could not open file [%s]!", argv[1]);
+			reporterr("source: %s: could not load file", argv[1]);
 
 		interactive_mode = 0;
 	}
