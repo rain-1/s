@@ -4,11 +4,11 @@
 typedef struct {
   int kind;
 
-  // kind=STRPORT_CHAR
+  /* kind=STRPORT_CHAR */
   char *text;
   int place;
 
-  // kind=STRPORT_FILE
+  /* kind=STRPORT_FILE */
   FILE *fptr;
 } string_port;
 

@@ -9,40 +9,31 @@
 #include "tokenizer.h"
 #include "variables.h"
 
-char variable_name[TOK_MAX];
-char *read_var_error;
+char varname[TOK_MAX];
+char *varerr;
 
 char *
 expand_variables(region *r, char *tok, int t)
 {
-	char *stok, *o, *val;
-	int alloc_len;
-	int i, l;
+	char *stok = tok, *o, *val;
+	int alloc_len = t+1;
+	int i = 0, l;
 
-	stok = tok;
-	alloc_len = t+1;
 	o = region_malloc(r, alloc_len);
 
-	i = 0;
 	while (*tok) {
 		if (*tok == '$') {
-			if (!(tok = read_variable_prefix(tok))) {
-				report("Problem parsing variable inside token [%s] at character [%d]. %s.", stok, i, read_var_error);
-				return NULL;
-			}
+			if (!(tok = read_variable_prefix(tok)))
+				reportret(NULL, "problem parsing variable inside token '%s' at character %d: %s", stok, i, varerr);
 
-			if (!(val = getenv(variable_name))) {
-				report("Reference to an undefined variable inside token [%s] at character [%d]", stok, i);
-				return NULL;
-			}
+			if (!(val = getenv(varname)))
+				reportret(NULL, "reference to an undefined variable inside token '%s' at character %d", stok, i);
 
 			l = strlen(val);
 			alloc_len += l;
 
-			if (alloc_len > TOK_MAX) {
-				report("Variable expansion blew up token size too large.");
-				return NULL;
-			}
+			if (alloc_len > TOK_MAX)
+				reportret(NULL, "variable expansion blew up token size too large");
 
 			o = region_realloc(r, o, alloc_len);
 			memcpy(o + i, val, l);
@@ -68,43 +59,34 @@ variable_character(char c)
 char *
 read_variable_prefix(char *tok)
 {
-	int i;
-	int bracket;
+	int i = 0;
+	int bracket = 0;
 
 	assert(*tok == '$');
 	tok++;
 
-	// NOTE: We don't bother to bounds check here
-	// because tok is already <= the size of a token
-	//
-	// ...lets see if this ever bites?
+	/* NOTE: We don't bother to bounds check here */
+	/* because tok is already <= the size of a token */
+	/* ...lets see if this ever bites? */
 
-	bracket = 0;
 	if (*tok == '{') {
 		bracket = 1;
 		tok++;
 	}
 
-	i = 0;
 	while (variable_character(*tok)) {
-		if (i == 0 && ('0' <= *tok && *tok <= '9')) {
-			read_var_error = "var must not start with a digit";
-			return NULL;
-		}
-		variable_name[i++] = *tok++;
+		if (i == 0 && ('0' <= *tok && *tok <= '9') && tok[1])
+			reportvar(varerr, "variable can not start with a digit");
+		varname[i++] = *tok++;
 	}
 
-	if (bracket && *tok++ != '}') {
-		read_var_error = "missing '}'";
-		return NULL;
-	}
+	if (bracket && *tok++ != '}')
+		reportvar(varerr, "missing '}'");
 
-	variable_name[i] = '\0';
+	varname[i] = '\0';
 
-	if (!i) {
-		read_var_error = "length 0 variable";
-		return NULL;
-	}
+	if (!i)
+		reportvar(varerr, "length 0 variable");
 
 	return tok;
 }
