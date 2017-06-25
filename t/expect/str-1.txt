@@ -1,0 +1,11 @@
+
+"
+\
+"\
+\"
+a"b\c
+a\b"c
+foobar
+foo
+bar
+foo\bar
