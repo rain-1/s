@@ -1,54 +1,84 @@
-CC=gcc
-CFLAGS=-std=c99 -D_GNU_SOURCE -Wall -Werror
+# s - command line interpreter
+# See LICENSE file for copyright and license details.
 
-SOURCES=tokenizer.c parser.c interpreter.c variables.c builtins.c region.c stringport.c linenoise/linenoise.c
-OBJECTS=$(SOURCES:.c=.o)
+include config.mk
 
-all: s
+EXE = s
+SUP = supporting/\< supporting/\> supporting/\>\> supporting/redir-box supporting/glob
+SRC = $(wildcard *.c) linenoise/linenoise.c
+OBJ = $(SRC:.c=.o)
 
-clean:
-	rm -f *.o
-	rm -f t6
-	rm -f s
-	rm -f supporting/\<
-	rm -f supporting/\>
-	rm -f supporting/\>\>
-	rm -f supporting/redir-box
-	rm -f supporting/glob
+all: options $(EXE)
 
-%.o: %.c
-	$(CC) -I linenoise -c $(CFLAGS) $< -o $@
+options:
+	@echo $(EXE) build options:
+	@echo "CFLAGS  = $(CFLAGS)"
+	@echo "LDFLAGS = $(LDFLAGS)"
 
-#t6: $(OBJECTS) t6.c
-#	$(CC) -o t6 $(OBJECTS) t6.c
+.o:
+	@echo $(LD) $@
+	@$(LD) -o $@ $< $(LDFLAGS)
 
-s: linenoise $(OBJECTS) s.c
-	$(CC) -o s $(OBJECTS) s.c
+.c.o:
+	@echo $(CC) $<
+	@$(CC) -c -o $@ $< $(CFLAGS)
 
 supporting/redir-box: supporting/redir-box.c
-	$(CC) -o supporting/redir-box supporting/redir-box.c
+	@echo $(CC) $<
+	@$(CC) -o supporting/redir-box supporting/redir-box.c
 
 supporting/glob: supporting/glob.c
-	$(CC) -o supporting/glob supporting/glob.c
+	@echo $(CC) $<
+	@$(CC) -o supporting/glob supporting/glob.c
 
 supporting: supporting/redir-box supporting/glob
-	rm -f supporting/\<
-	rm -f supporting/\>
-	rm -f supporting/\>\>
-	cd supporting ; ln -s redir-box \<
-	cd supporting ; ln -s redir-box \>
-	cd supporting ; ln -s redir-box \>\>
+	@echo creating redir symlinks
+	@cd supporting; ln -fs redir-box \<
+	@cd supporting; ln -fs redir-box \>
+	@cd supporting; ln -fs redir-box \>\>
 
 linenoise:
 	@echo "This project requires the linenoise library!"
 	@echo "git clone https://github.com/antirez/linenoise.git"
 	@exit 1
 
-install: s supporting
-	mkdir -p out
-	cp s out/
-	cp supporting/redir-box out/
-	cp 'supporting/<' out/
-	cp 'supporting/>' out/
-	cp 'supporting/>>' out/
-	cp 'supporting/glob' out/
+${OBJ}: config.mk
+
+$(EXE): $(OBJ) linenoise supporting
+	@echo $(CC) -o $@
+	@$(CC) -o $@ $(OBJ) $(LDFLAGS)
+
+clean:
+	@echo -n cleaning ...
+	@rm -f $(OBJ) $(EXE)
+	@rm -f supporting/*.o
+	@rm -f $(SUP)
+	@echo \ done
+
+install: all
+	@echo -n installing $(EXE) to $(DESTDIR)$(PREFIX)/bin ...
+	@mkdir -p $(DESTDIR)$(PREFIX)/bin
+	@cp -f $(EXE) $(DESTDIR)$(PREFIX)/bin
+	@chmod 755 $(DESTDIR)$(PREFIX)/bin/$(EXE)
+	@echo \ done
+	@echo -n installing supporting files to $(DESTDIR)$(PREFIX)/bin ...
+	@cp -f $(SUP) $(DESTDIR)$(PREFIX)/bin
+	@echo \ done
+	@echo -n installing manual page to $(DESTDIR)$(MANPREFIX)/man1 ...
+	@mkdir -p $(DESTDIR)$(MANPREFIX)/man1
+	@sed "s/VERSION/$(VERSION)/g" < $(EXE).1 > $(DESTDIR)$(MANPREFIX)/man1/$(EXE).1
+	@chmod 644 $(DESTDIR)$(MANPREFIX)/man1/$(EXE).1
+	@echo \ done
+
+uninstall:
+	@echo -n removing executable file from $(DESTDIR)$(PREFIX)/bin ...
+	@rm -f $(DESTDIR)$(PREFIX)/bin/$(EXE)
+	@echo \ done
+	@echo -n removing supporting files from $(DESTDIR)$(PREFIX)/bin ...
+	@rm -f $(DESTDIR)$(PREFIX)/bin/$(SUP)
+	@echo \ done
+	@echo -n removing manual page from $(DESTDIR)$(MANPREFIX)/man1 ...
+	@rm -f $(DESTDIR)$(MANPREFIX)/man1/$(EXE).1
+	@echo \ done
+
+.PHONY: all options clean install uninstall
