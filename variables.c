@@ -75,8 +75,6 @@ read_variable_prefix(char *tok)
 	}
 
 	while (variable_character(*tok)) {
-		if (i == 0 && ('0' <= *tok && *tok <= '9') && tok[1])
-			reportvar(varerr, "variable can not start with a digit");
 		varname[i++] = *tok++;
 	}
 
