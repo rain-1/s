@@ -1,0 +1,1 @@
+cat expect/cat.txt
