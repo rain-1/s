@@ -12,6 +12,7 @@ All of: space, tab, newline, # end a token
 You can use \ inside a word to put one of those ending characters (or a backslash) in it.
 
 WORD ::= WORDCH +
+       | `~` WORDH +
 
 WORDCH ::= '\' <any char>
          | <any char except '\\' ' ' '\t' '\n' '#'>
