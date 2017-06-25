@@ -44,7 +44,7 @@ linenoise:
 
 ${OBJ}: config.mk
 
-$(EXE): $(OBJ) linenoise supporting
+$(EXE): linenoise $(OBJ) supporting
 	@echo $(CC) -o $@
 	@$(CC) -o $@ $(OBJ) $(LDFLAGS)
 

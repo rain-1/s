@@ -22,7 +22,6 @@ handler_sigint(int sig)
 int
 main(int argc, char **argv)
 {
-	int i;
 	FILE *f;
 
 	signal(SIGINT, handler_sigint);
