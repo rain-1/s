@@ -109,7 +109,7 @@ st_string:
 		return -1;
 
 	c = port_getc(stream);
-	if (c == quote) {
+	if (!escape_char && c == quote) {
 		goto st_accept;
 	} else if (!escape_char && c == '\\') {
 		escape_char = 1;
@@ -117,17 +117,23 @@ st_string:
 	} else if (escape_char && is_escape_char(c)) {
 		escape_char = 0;
 		switch(c) {
-		case 't':
-			TOK('\t');
-			break;
 		case '\\':
 			TOK('\\');
+			break;
+		case 't':
+			TOK('\t');
 			break;
 		case 'n':
 			TOK('\n');
 			break;
 		case 'r':
 			TOK('\r');
+			break;
+		case '"':
+			TOK('"');
+			break;
+		case '\'':
+			TOK('\'');
 			break;
 		default:
 			reporterr("impossible escape");
