@@ -52,7 +52,7 @@ variable_character(char c)
 {
 	return c == '_'
 		|| ('A' <= c && c <= 'Z')
-		|| ('a' <= c && c <= 'a')
+		|| ('a' <= c && c <= 'z')
 		|| ('0' <= c && c <= '9');
 }
 
