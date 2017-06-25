@@ -78,31 +78,32 @@ st_tok:
 
 		goto st_string;
 	} else {
-		TOK(c);
 		goto st_word;
 	}
 
 st_word:
 	/* we finished reading the word ensure it has nonzero length then return */
+	if (c == '\\') {
+		if (port_eof(stream))
+			return -1;
+		
+		c = port_getc(stream);
+	}
+
+	TOK(c);
+	
 	if (port_eof(stream) || token_end(port_peek(stream))) {
 		if (len)
 			goto st_accept;
 		else
 			return -1;
-	} else {
-		if ((c = port_getc(stream)) == '\\') {
-			if (port_eof(stream))
-				return -1;
-
-			c = port_getc(stream);
-			TOK(c);
-		} else {
-			TOK(c);
-		}
-
+	}
+	else {
+		c = port_getc(stream);
+		
 		goto st_word;
 	}
-
+	
 st_string:
 	if (port_eof(stream))
 		return -1;
@@ -110,7 +111,7 @@ st_string:
 	c = port_getc(stream);
 	if (c == quote) {
 		goto st_accept;
-	} else if (c == '\\') {
+	} else if (!escape_char && c == '\\') {
 		escape_char = 1;
 		goto st_string;
 	} else if (escape_char && is_escape_char(c)) {
