@@ -132,8 +132,11 @@ drain_pipe(int fd, char **out)
 	int len = 0;
 	int size = 1000;
 	char *str = malloc(size);
-	int n;
+	int i, n;
 
+	int delta = 0;
+
+	// Read everything from the pipe into a buffer
 	while ((n = read(fd, str + len, size - 1 - len)) > 0) {
 		len += n;
 
@@ -143,8 +146,20 @@ drain_pipe(int fd, char **out)
 		}
 	}
 
+	// Now strip out the \0 characters
+	for (i = 0; i < len; i++) {
+		str[i] = str[i + delta];
+		
+		if (str[i] == '\0') {
+			delta++;
+			len--;
+			i--;
+			continue;
+		}
+	}
+	
 	str[len] = '\0';
-
+	
 	*out = str;
 }
 
