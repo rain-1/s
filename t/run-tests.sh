@@ -3,8 +3,8 @@
 total=0
 pass=0
 
-for file in scripts/*; do
-	expect=${file%.sh}.txt
+for file in scripts/*s; do
+	expect=${file%.s}.txt
 	expect=expect${expect#scripts}
 
 	echo -n "testing $file ... "
