@@ -10,6 +10,7 @@ More specifically by any of the chars listed in token_end.
 All of: space, tab, newline, # end a token
 
 You can use \ inside a word to put one of those ending characters (or a backslash) in it.
+You can use \ at the end of a line to ignore the EOL (for making a single command over multiple lines).
 
 WORD ::= WORDCH +
        | `~` WORDH +
