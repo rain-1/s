@@ -85,8 +85,14 @@ read_token(string_port *stream, int *out_should_expand)
 
 	*out_should_expand = 1;
 
-	skip_spaces_and_comments(stream);
-	if (port_eof(stream) || port_peek(stream) == '\n') /* TODO: understand and explain why do we die on \n? */
+	// this routine is used to read the next
+	// token in a 'line' of tokens
+	// therefore we need to exit if we hit a
+	// newline or a comment
+	skip_spaces(stream);
+	if (port_eof(stream)
+	    || port_peek(stream) == '\n'
+	    || port_peek(stream) == '#')
 		return -1;
 
 	goto st_tok; /* parse using a state machine */
@@ -196,7 +202,9 @@ read_tokens(region *r, string_port *stream)
 	int len, should_expand;
 
 	tokens = region_malloc(r, sizeof(char*)*MAX_TOKS_PER_LINE);
-
+	
+	skip_spaces_and_comments(stream);
+	
 	while ((len = read_token(stream, &should_expand)) != -1) {
 		if (should_expand) {
 			if (!(tokens[i] = expand_variables(r, tok_buf, len)))
