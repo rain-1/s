@@ -16,6 +16,8 @@
 
 char tok_buf[TOK_MAX];
 
+int token_lexing_error;
+
 int
 is_escape_char(int chr)
 {
@@ -162,7 +164,8 @@ st_string:
 		// is not another string
 		if (port_peek(stream) == '"' ||
 		    port_peek(stream) == '\'') {
-			reporterr("strings too close together");
+			token_lexing_error = 1;
+			reportret(-1, "strings too close together");
 		}
 		
 		goto st_accept;
@@ -191,12 +194,15 @@ st_string:
 			TOK('\'');
 			break;
 		default:
-			reporterr("impossible escape");
+			token_lexing_error = 1;
+			reportret(-1, "impossible escape");
 		}
 		goto st_string;
 	} else {
-		if (escape_char)
-			reporterr("escaped a non-escapable char");
+		if (escape_char) {
+			token_lexing_error = 1;
+			reportret(-1, "escaped a non-escapable char");
+		}
 		TOK(c);
 		goto st_string;
 	}
@@ -218,8 +224,11 @@ read_tokens(region *r, string_port *stream)
 	tokens = region_malloc(r, sizeof(char*)*MAX_TOKS_PER_LINE);
 	
 	skip_spaces_and_comments(stream);
+
+	token_lexing_error = 0;
 	
 	while ((len = read_token(stream, &should_expand)) != -1) {
+
 		if (should_expand) {
 			if (!(tokens[i] = expand_variables(r, tok_buf, len)))
 				return NULL;
@@ -229,9 +238,13 @@ read_tokens(region *r, string_port *stream)
 		}
 
 		if (++i >= MAX_TOKS_PER_LINE)
-			reporterr("line too long");
+			reportret(NULL, "line too long");
 	}
-
+	
+	if (token_lexing_error) {
+		return NULL;
+	}
+	
 	tokens[i] = NULL;
 
 	return tokens;
