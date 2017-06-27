@@ -163,16 +163,19 @@ drain_pipe(int fd, char **out)
 	*out = str;
 }
 
-void
+int
 parse_and_execute(string_port *port, char **string_capture)
 {
 	pid_t p;
 	region r;
 	struct AST *n;
 	int bg;
-	int status;
+	int status = 0;
 
 	int fd[2];
+
+	if (string_capture)
+		*string_capture = NULL;
 
 	region_create(&r);
 
@@ -204,6 +207,8 @@ parse_and_execute(string_port *port, char **string_capture)
 	}
 
 	region_free(&r);
+
+	return status;
 }
 
 void

@@ -26,7 +26,6 @@ Builtin builtins[] = {
 	{ "unset",  &builtin_unset },
 	{ "source", &builtin_source },
 	{ "exit",   &builtin_exit },
-	{ "eval",   &builtin_eval },
 };
 
 int
@@ -115,23 +114,4 @@ builtin_exit(char **argv)
 		exit(0);
 	else
 		exit(strtol(argv[1], NULL, 0));
-}
-
-void
-builtin_eval(char **argv)
-{
-	string_port port;
-	char *result = NULL;
-
-	if (!argv[1] || !argv[2])
-		reportret(,"eval: two or more arguments required");
-
-	port = (string_port){ .kind=STRPORT_CHAR, .text=argv[2], .place=0 };
-	parse_and_execute(&port, &result);
-	if (result) {
-		setenv(argv[1], result, 1);
-		free(result);
-	} else {
-		setenv(argv[1], "[fail]", 1);
-	}
 }
