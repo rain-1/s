@@ -89,6 +89,7 @@ read_token(string_port *stream, int *out_should_expand)
 	// token in a 'line' of tokens
 	// therefore we need to exit if we hit a
 	// newline or a comment
+st_restart:
 	skip_spaces(stream);
 	if (port_eof(stream)
 	    || port_peek(stream) == '\n'
@@ -117,12 +118,18 @@ st_tok:
 		TOK('E');
 		TOK('}');
 		goto st_word_continue;
+	} else if (c == '\\') {
+		if (port_peek(stream) == '\n') {
+			port_getc(stream);
+			goto st_restart;
+		}
+		else
+			goto st_word;
 	} else {
 		goto st_word;
 	}
 
 st_word:
-	/* we finished reading the word ensure it has nonzero length then return */
 	if (c == '\\') {
 		if (port_eof(stream))
 			return -1;
