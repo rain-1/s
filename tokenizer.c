@@ -158,6 +158,13 @@ st_string:
 
 	c = port_getc(stream);
 	if (!escape_char && c == quote) {
+		// check that the very next char
+		// is not another string
+		if (port_peek(stream) == '"' ||
+		    port_peek(stream) == '\'') {
+			reporterr("strings too close together");
+		}
+		
 		goto st_accept;
 	} else if (!escape_char && c == '\\') {
 		escape_char = 1;
