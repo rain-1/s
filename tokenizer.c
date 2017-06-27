@@ -39,6 +39,31 @@ skip_spaces(string_port *stream)
 }
 
 void
+skip_eol(string_port *stream)
+{
+	while (!port_eof(stream)) {
+		if (port_getc(stream) == '\n')
+			break;
+	}
+}
+
+void
+skip_spaces_and_comments(string_port *stream)
+{
+	while (!port_eof(stream)) {
+		if (port_peek(stream) == ' ' || port_peek(stream) == '\t') {
+			port_getc(stream);
+		}
+		else if (port_peek(stream) == '#') {
+			skip_eol(stream);
+		}
+		else {
+			break;
+		}
+	}
+}
+
+void
 skip_newline(string_port *stream)
 {
 	skip_spaces(stream);
@@ -60,7 +85,7 @@ read_token(string_port *stream, int *out_should_expand)
 
 	*out_should_expand = 1;
 
-	skip_spaces(stream);
+	skip_spaces_and_comments(stream);
 	if (port_eof(stream) || port_peek(stream) == '\n') /* TODO: understand and explain why do we die on \n? */
 		return -1;
 
@@ -86,8 +111,6 @@ st_tok:
 		TOK('E');
 		TOK('}');
 		goto st_word_continue;
-	} else if (c == '\\') {
-		goto st_word;
 	} else {
 		goto st_word;
 	}
