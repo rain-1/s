@@ -54,11 +54,10 @@ interpret_junction(struct AST* n)
 		/*     otherwise continue executing the disj (conj) */
 		/*     chain. */
 
-		if ((!WEXITSTATUS(r)) ^ (n->type == NODE_CONJ)) {
+		if ((!WEXITSTATUS(r)) ^ (n->type == NODE_CONJ))
 			_exit(WEXITSTATUS(r));
-		} else {
+		else
 			interpret(n->node.child.r);
-		}
 		break;
 	}
 }
@@ -136,7 +135,7 @@ drain_pipe(int fd, char **out)
 
 	int delta = 0;
 
-	// Read everything from the pipe into a buffer
+	/* read everything from the pipe into a buffer */
 	while ((n = read(fd, str + len, size - 1 - len)) > 0) {
 		len += n;
 
@@ -146,7 +145,7 @@ drain_pipe(int fd, char **out)
 		}
 	}
 
-	// Now strip out the \0 characters
+	/* now strip out the \0 characters */
 	for (i = 0; i < len; i++) {
 		str[i] = str[i + delta];
 		
@@ -157,9 +156,9 @@ drain_pipe(int fd, char **out)
 			continue;
 		}
 	}
-	
+
 	str[len] = '\0';
-	
+
 	*out = str;
 }
 
@@ -224,9 +223,7 @@ interpreter_loop(FILE *f)
 			if (errno == EAGAIN) {
 				errno = 0;
 				continue;
-			}
-			else
-				break;
+			} else break;
 		}
 
 		parse_and_execute(&port, NULL);

@@ -21,7 +21,7 @@ expand_variables(region *r, char *tok, int t)
 
 	o = region_malloc(r, alloc_len);
 
-	while (*tok) {
+	while (*tok)
 		if (*tok == '$') {
 			if (!(tok = read_variable_prefix(tok)))
 				reportret(NULL, "problem parsing variable inside token '%s' at character %d: %s", stok, i, varerr);
@@ -41,7 +41,6 @@ expand_variables(region *r, char *tok, int t)
 		} else {
 			o[i++] = *tok++;
 		}
-	}
 	o[i] = '\0';
 
 	return o;
@@ -74,9 +73,8 @@ read_variable_prefix(char *tok)
 		tok++;
 	}
 
-	while (variable_character(*tok)) {
+	while (variable_character(*tok))
 		varname[i++] = *tok++;
-	}
 
 	if (bracket && *tok++ != '}')
 		reportvar(varerr, "missing '}'");
