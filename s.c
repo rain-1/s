@@ -15,6 +15,7 @@
 #include "builtins.h"
 
 char *argv0;
+int debug = 0;
 
 void
 handler_sigint(int sig)
@@ -25,7 +26,7 @@ handler_sigint(int sig)
 static void
 usage(int eval)
 {
-	fprintf(stderr, "usage: %s [-vh] [SCRIPT]\n", argv0);
+	fprintf(stderr, "usage: %s [-vh] [SCRIPT ...]\n", argv0);
 	exit(eval);
 }
 
@@ -35,6 +36,9 @@ main(int argc, char **argv)
 	FILE *f;
 
 	ARGBEGIN {
+	case 'd':
+		debug = 1;
+		break;
 	case 'v':
 		printf("%s v%s (c) 2014, 2016, 2017 s team\n", argv0, VERSION);
 		return 0;
