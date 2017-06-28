@@ -1,4 +1,5 @@
 
+extern char *argv0;
 extern int interactive_mode;
 
 #define reporterr(M, ...) { \
