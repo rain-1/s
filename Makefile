@@ -82,6 +82,7 @@ uninstall:
 	@echo \ done
 
 test:
-	cd t ; ./run-tests.sh
+	@echo running tests
+	@cd t; ./run-tests.sh
 
 .PHONY: all options clean install uninstall test
