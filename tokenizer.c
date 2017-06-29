@@ -73,7 +73,7 @@ skip_newline(string_port *stream)
 /* returns -1 on failure, length of the token on success
  * a word token cannot have length 0 but a string token can */
 int
-read_token(char *tok_buf, string_port *stream, int *out_should_expand, int *lex_err)
+read_token(char *tok_buf, string_port *stream, int *out_should_expand)
 {
 	int len = 0;
 	char c;
@@ -81,7 +81,6 @@ read_token(char *tok_buf, string_port *stream, int *out_should_expand, int *lex_
 	char quote;
 	int escape_char;
 
-	*lex_err = 0;
 	*out_should_expand = EXPAND_DEFAULT;
 
 /* this routine is used to read the next token in a 'line' of tokens therefore
@@ -157,10 +156,8 @@ st_string:
 	c = port_getc(stream);
 	if (!escape_char && c == quote) {
 		/* check that the very next char is not another string */
-		if (is_quote_char(port_peek(stream))) {
-			*lex_err = 1;
-			reportret(-1, "strings too close together");
-		}
+		if (is_quote_char(port_peek(stream)))
+			reportret(-2, "strings too close together");
 
 		goto st_accept;
 	} else if (!escape_char && c == '\\') {
@@ -191,15 +188,12 @@ st_string:
 			TOK('`');
 			break;
 		default:
-			*lex_err = 1;
-			reportret(-1, "impossible escape");
+			reportret(-2, "impossible escape");
 		}
 		goto st_string;
 	} else {
-		if (escape_char) {
-			*lex_err = 1;
-			reportret(-1, "escaped a non-escapable char");
-		}
+		if (escape_char)
+			reportret(-2, "escaped a non-escapable char");
 		TOK(c);
 		goto st_string;
 	}
@@ -213,23 +207,15 @@ st_accept:
 char **
 read_tokens(region *r, string_port *stream)
 {
-	char tok_buf[TOK_MAX];
-
-	char **tokens;
-	int i = 0;
-
-	int len;
-	int lex_err, should_expand;
-
+	char tok_buf[TOK_MAX], **tokens, *result;
+	int i = 0, len, should_expand;
 	string_port port;
-	char *result;
 
 	tokens = region_malloc(r, sizeof(char*)*MAX_TOKS_PER_LINE);
 
 	skip_spaces_and_comments(stream);
 
-	while ((len = read_token(tok_buf, stream,
-				 &should_expand, &lex_err)) != -1) {
+	while ((len = read_token(tok_buf, stream, &should_expand)) > -1) {
 		switch (should_expand) {
 		case EXPAND_DEFAULT:
 			if (!(tokens[i] = expand_variables(r, tok_buf, len)))
@@ -254,7 +240,7 @@ read_tokens(region *r, string_port *stream)
 			reportret(NULL, "line too long");
 	}
 
-	if (lex_err)
+	if (len == -2)
 		return NULL;
 
 	tokens[i] = NULL;
