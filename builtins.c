@@ -21,10 +21,10 @@ char cwd[PATH_MAX];
 char owd[PATH_MAX];
 
 Builtin builtins[] = {
+	{ "source", &builtin_source },
 	{ "cd",     &builtin_cd },
 	{ "set",    &builtin_set },
 	{ "unset",  &builtin_unset },
-	{ "source", &builtin_source },
 	{ "exit",   &builtin_exit },
 };
 
@@ -46,23 +46,44 @@ perform_builtin(struct AST *n)
 }
 
 void
-builtin_cd(char **args)
+builtin_source(char **argv)
+{
+	FILE *f;
+	int mode;
+
+	if (!argv[1])
+		reportret(,"%s: argument required", argv[0]);
+	if (!(f = fopen(argv[1], "r")))
+		reportret(,"%s: %s: could not load file", argv[0], argv[1]);
+
+	mode = interactive_mode;
+	interactive_mode = 0;
+
+	vars_set(argv);
+
+	interpreter_loop(f);
+
+	interactive_mode = mode;
+}
+
+void
+builtin_cd(char **argv)
 {
 	char *dir;
 	int isowd = 0;
 
-	if (!(dir = args[1])) {
+	if (!(dir = argv[1])) {
 		if (!(dir = getenv("HOME")))
-			reportret(,"cd: invalid $HOME");
+			reportret(,"%s: invalid $HOME", argv[0]);
 	} else if (strcmp(dir, "-") == 0) {
 		if (!(dir = getenv("OLDPWD")))
-			reportret(,"cd: invalid $OLDPWD");
+			reportret(,"%s: invalid $OLDPWD", argv[0]);
 		isowd = 1;
 	}
 
 	getcwd(owd, PATH_MAX);
 	if (chdir(dir)) {
-		report("cd: %s: could not change to directory", dir);
+		report("%s: %s: could not change to directory", argv[0], dir);
 	} else {
 		getcwd(cwd, PATH_MAX);
 		setenv("PWD", cwd, 1);
@@ -78,7 +99,7 @@ builtin_set(char **argv)
 	if (argv[1] && argv[2])
 		setenv(argv[1], argv[2], INT_MAX);
 	else
-		report("set: two arguments required");
+		report("%s: two arguments required", argv[0]);
 }
 
 void
@@ -87,24 +108,7 @@ builtin_unset(char **argv)
 	if (argv[1])
 		unsetenv(argv[1]);
 	else
-		report("unset: argument required");
-}
-
-void
-builtin_source(char **argv)
-{
-	FILE *f;
-	int mode;
-
-	if (!argv[1])
-		reportret(,"source: argument required");
-	if (!(f = fopen(argv[1], "r")))
-		reportret(,"source: %s: could not load file", argv[1]);
-
-	mode = interactive_mode;
-	interactive_mode = 0;
-	interpreter_loop(f);
-	interactive_mode = mode;
+		report("%s: argument required", argv[0]);
 }
 
 void
