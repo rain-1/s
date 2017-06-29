@@ -26,7 +26,7 @@ handler_sigint(int sig)
 static void
 usage(int eval)
 {
-	fprintf(stderr, "usage: %s [-vh] [SCRIPT ...]\n", argv0);
+	fprintf(stderr, "usage: %s [-dvh] [SCRIPT ...]\n", argv0);
 	exit(eval);
 }
 
