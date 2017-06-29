@@ -11,44 +11,49 @@
 .Sh DESCRIPTION
 .Nm
 has two main modes of operation: interactive shell and script processor.
-
+.Pp
 If the
 .Ar SCRIPT
 is provided it will execute that file with optional given arguments.
 Alternatively you can provide commands via stdin.
-
+.Pp
 Otherwise if you start
 .Nm
 in a terminal you will be given an interactive shell prompt like this:
-
+.
 .Bd -literal
 	s$ echo hello world!
 	hello world!
+
 .Ed
-
+.
 .Sh OPTIONS
-
+.
 .Bl -tag -width indent
-
+.
 .It Fl d
 Enable debug mode, reporting becomes more verbose showing file and line number
 of where the error or warning occurred.
-
+.
 .It Fl v
 Print version and copyright info and exit.
-
+.
 .It Fl h
 Print usage info and exit.
-
+.
+.El
+.
 .Sh SYNTAX
-
+.
 The lexical syntax of the shell language is very strictly tokenized based on
-spaces. Variables may occur inside tokens with
+spaces.
+.Pp
+Variables may occur inside tokens with
 .Cm ${FOO}
 syntax, the
 .Cm {}'s
 are optional for when variables need to be next to other strings:
-
+.
 .Bd -literal
 	s$ set FOO bar
 	s$ set avar value
@@ -58,24 +63,26 @@ are optional for when variables need to be next to other strings:
 	barvalue
 	s$ echo ${FOO}string$avar
 	barstringvalue
-.Ed
 
+.Ed
+.
 See the
 .Cm BUILTINS
 section below for info on setting variables.
-
+.Pp
 If found at the beginning of a token the
 .Cm ~
 character expands to
 .Cm ${HOME}
 as a shortcut for the user's home directory.
-
-Single and double quotes are used to group the enclosed strings into one token.  
-Variables are only expanded inside double quotes. You can escape characters in 
-quotes by using backslashes, allowing you to insert the same quote character 
-inside a string, as well as inserting newline, tab, and spaces. Quotes can also
-be inserted inside the other quote types without escaping them.
-
+.Pp
+.Cm Single No and Cm double quotes
+are used to group the enclosed strings into one token.  Variables are only
+expanded inside double quotes. You can escape characters in quotes by using
+backslashes, allowing you to insert the same quote character inside a string,
+as well as inserting newline, tab, and spaces. Quotes can also be inserted
+inside the other quote types without escaping them.
+.
 .Bd -literal
 	s$ echo "I am using the '$SHELL' shell"
 	I am using the '/bin/s' shell
@@ -89,19 +96,22 @@ be inserted inside the other quote types without escaping them.
 	person  balance
 	Richard $500
 	John    $300
+
 .Ed
-
-Backticks can also be used to expand commands quoted inside to their output:
-
+.
+.Cm Backticks
+can also be used to expand commands quoted inside to their output:
+.
 .Bd -literal
 	s$ rm `cat oldfiles.txt` # delete all files found in oldfiles.txt
 	s$ set CFILES `ls *.c`   # make $CFILES equal to a list of all C files
-.Ed
 
+.Ed
+.
 The
 .Cm #
 character, as seen above, starts a comment until the end of the line.
-
+.Pp
 The grammar is line based. Sequences of tokens are treated as commands and the
 operators
 .Cm | ,
@@ -109,33 +119,37 @@ operators
 and
 .Cm ||
 are parsed in order of tightest binding first.
-
-File redirection is achieve through the use of separate commands, thus pipes
+.Pp
+File
+.Cm redirection
+is achieve through the use of separate commands, thus pipes
 are needed:
-
+.
 .Bd -literal
 	s$ echo "hello world" | > file.txt
 	s$ echo "hello world again" | >> file.txt
 	s$ cat | < file.txt
 	hello world
 	hello world again
+
 .Ed
-
-At the end of a line you can specify that a job should be run in the background
-with
-.Cm & .
-
-A backslash at the end of the line allows for commands to span multiple lines.
-
+.
+.Cm &
+at the end of a line can specify that a job should be run in the background.
+.Pp
+A
+.Cm backslash
+at the end of the line allows for commands to span multiple lines.
+.
 .Sh BUILTINS
-
+.
 .Bl -tag -width indent
-
+.
 .It Cm source Ar SCRIPT Op ...
 Open and execute commands in
 .Ar SCRIPT
 with the optional arguments provided.
-
+.
 .It Cm cd Op Ar DIR | -
 Change current working directory to
 .Ar DIR .
@@ -147,59 +161,62 @@ instead.  If
 .Cm -
 is given switch directories to previous working directory, stored in
 .Cm $OLDPWD .
-
+.
 .It Cm set Ar VAR VAL
 Set the environment variable given by
 .Ar VAR
 equal to
 .Ar VAL .
-
+.
 .It Cm unset Ar VAR
 Remove environment variable
 .Ar VAR .
-
+.
 .It Cm exit Op Ar N
 Exit
 .Nm
 with code
 .Ar N ,
 defaults to 0.
-
+.
+.El
+.
 .Sh ENVIRONMENT
-
+.
 .Bl -tag -width indent
-
+.
 .It Cm SHELL
 The full pathname to the shell.
-
+.
 .It Cm HOME
 The home directory of the current user.
-
+.
 .It Cm PWD
 Current working directory.
-
+.
 .It Cm OLDPWD
 Previous working directory.
-
+.
 .It Cm PATH
 A colon-separated list of directories in which
 .Nm
 looks for commands in.
-
+.
+.El
+.
 .Sh AUTHORS
-
+.
 .An rain-1 \<rain1@openmailbox.org\>
-
+.Pp
 .An Ed van Bruggen \<edvb54@gmail.com\>
-
+.
 .Sh LICENSE
-
+.
 BSD 3 Clause
-
+.
 .Sh SEE ALSO
-
+.
 .Cm execline(1)
-
+.
+.Pp
 View source code and report bugs at: \<https://github.com/rain-1/s\>
-
-.SH

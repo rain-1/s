@@ -49,21 +49,19 @@ shell implies it implements the POSIX shell standard).
 Here is the man page for *s*:
 
 ```
-S(1)                        General Commands Manual                       S(1)
+S(1)                      BSD General Commands Manual                      S(1)
 
 NAME
-     s – command line interpreter
+     s — command line interpreter
 
 SYNOPSIS
-     s [script]
+     s [-dvh] [SCRIPT ...]
 
 DESCRIPTION
-     s has two main modes of operation: interactive shell and batch script
-     processor.
+     s has two main modes of operation: interactive shell and script processor.
 
-     If the command line argument script is provided it will execute that
-     file. This also allows you to use s as the shebang line in an executable.
-     Alternatively you can provide commands via stdin.
+     If the SCRIPT is provided it will execute that file with optional given
+     arguments.  Alternatively you can provide commands via stdin.
 
      Otherwise if you start s in a terminal you will be given an interactive
      shell prompt like this:
@@ -71,36 +69,127 @@ DESCRIPTION
              s$ echo hello world!
              hello world!
 
+OPTIONS
+     -d      Enable debug mode, reporting becomes more verbose showing file and
+             line number of where the error or warning occurred.
+
+     -v      Print version and copyright info and exit.
+
+     -h      Print usage info and exit.
+
 SYNTAX
      The lexical syntax of the shell language is very strictly tokenized based
-     on spaces. Variables may occur inside tokens with ${FOO} syntax, the {}'s
-     are optional.
+     on spaces.
 
-     The # character starts a comment until the end of the line.
+     Variables may occur inside tokens with ${FOO} syntax, the {}'s are
+     optional for when variables need to be next to other strings:
 
-     A token always stays a single token there is no globs or bash style
-     expansion. You will need to master xargs to use this shell.
+             s$ set FOO bar
+             s$ set avar value
+             s$ echo $FOO ${avar}
+             bar value
+             s$ echo $FOO$avar
+             barvalue
+             s$ echo ${FOO}string$avar
+             barstringvalue
 
-GRAMMAR
-     The grammar is line based. Sequences of tokens are treated as commands
-     and the operators | , && and || are parsed in order of tightest binding
-     first.
+     See the BUILTINS section below for info on setting variables.
 
-     At the end of a line you can specify that job should be run in the
-     background with &
+     If found at the beginning of a token the ~ character expands to ${HOME} as
+     a shortcut for the user's home directory.
 
+     Single and double quotes are used to group the enclosed strings into one
+     token.  Variables are only expanded inside double quotes. You can escape
+     characters in quotes by using backslashes, allowing you to insert the same
+     quote character inside a string, as well as inserting newline, tab, and
+     spaces. Quotes can also be inserted inside the other quote types without
+     escaping them.
+
+             s$ echo "I am using the '$SHELL' shell"
+             I am using the '/bin/s' shell
+             s$ echo 'I am using the "$SHELL" shell'
+             I am using the "$SHELL" shell
+
+             s$ echo "you can use \ as well: \" \'"
+             you can use  as well: " '
+
+             $ echo 'person\tbalance\nRichard\t$500\nJohn\t$300'
+             person  balance
+             Richard $500
+             John    $300
+
+     Backticks can also be used to expand commands quoted inside to their out‐
+     put:
+
+             s$ rm `cat oldfiles.txt` # delete all files found in oldfiles.txt
+             s$ set CFILES `ls *.c`   # make $CFILES equal to a list of all C files
+
+     The # character, as seen above, starts a comment until the end of the
+     line.
+
+     The grammar is line based. Sequences of tokens are treated as commands and
+     the operators |, &&, and || are parsed in order of tightest binding first.
+
+     File redirection is achieve through the use of separate commands, thus
+     pipes are needed:
+
+             s$ echo "hello world" | > file.txt
+             s$ echo "hello world again" | >> file.txt
+             s$ cat | < file.txt
+             hello world
+             hello world again
+
+     & at the end of a line can specify that a job should be run in the back‐
+     ground.
+
+     A backslash at the end of the line allows for commands to span multiple
+     lines.
 
 BUILTINS
-     cd [directory]
+     source SCRIPT [...]
+             Open and execute commands in SCRIPT with the optional arguments
+             provided.
 
-     set variable value
+     cd [DIR | -]
+             Change current working directory to DIR.  If DIR is not supplied,
+             change to $HOME instead.  If - is given switch directories to pre‐
+             vious working directory, stored in $OLDPWD.
 
-     unset variable
+     set VAR VAL
+             Set the environment variable given by VAR equal to VAL.
 
-     source filename
+     unset VAR
+             Remove environment variable VAR.
 
-     If there is an error the builtins will cause the script to exit
-     immediately, in interactive mode a warning is printed.
+     exit [N]
+             Exit s with code N, defaults to 0.
+
+ENVIRONMENT
+     SHELL   The full pathname to the shell.
+
+     HOME    The home directory of the current user.
+
+     PWD     Current working directory.
+
+     OLDPWD  Previous working directory.
+
+     PATH    A colon-separated list of directories in which s looks for com‐
+             mands in.
+
+AUTHORS
+     rain-1 <rain1@openmailbox.org>
+
+     Ed van Bruggen <edvb54@gmail.com>
+
+LICENSE
+     BSD 3 Clause
+
+SEE ALSO
+     execline(1)
+
+     View source code and report bugs at: <https://github.com/rain-1/s>
+
+S v0.0.0                          Jun 28, 2017                         S v0.0.0
 ```
 
 The important thing is what's missing: We don't have globs or "splatting" where
