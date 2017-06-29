@@ -3,7 +3,5 @@
 
 extern char tok_buf[TOK_MAX];
 
-void skip_spaces(string_port *stream);
-void skip_spaces_and_comments(string_port *stream);
 void skip_newline(string_port *stream);
 char** read_tokens(region *r, string_port *stream);

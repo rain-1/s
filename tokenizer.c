@@ -16,27 +16,27 @@ enum {
 	EXPAND_EVAL,
 };
 
-int
+static int
 is_quote_char(int chr)
 {
 	return chr == '"' || chr == '\'' || chr == '`';
 }
 
-int
+static int
 is_escape_char(int chr)
 {
 	return chr == '\\' || chr == 't' || chr == 'n' || chr == 'r' ||
-		is_quote_char(chr);
+	       is_quote_char(chr);
 }
 
-int
+static int
 token_end(int chr)
 {
 	return chr == ' ' || chr == '\t' || chr == '\n' || chr == '\r' ||
 	       chr == '#';
 }
 
-void
+static void
 skip_spaces(string_port *stream)
 {
 	while (!port_eof(stream) &&
@@ -44,29 +44,15 @@ skip_spaces(string_port *stream)
 		port_getc(stream);
 }
 
-void
-skip_eol(string_port *stream)
-{
-	while (!port_eof(stream)) {
-		if (port_getc(stream) == '\n')
-			break;
-	}
-}
-
-void
+static void
 skip_spaces_and_comments(string_port *stream)
 {
-	while (!port_eof(stream)) {
-		if (port_peek(stream) == ' ' || port_peek(stream) == '\t') {
+	while (!port_eof(stream))
+		if (port_peek(stream) == ' ' || port_peek(stream) == '\t')
 			port_getc(stream);
-		}
-		else if (port_peek(stream) == '#') {
-			skip_eol(stream);
-		}
-		else {
-			break;
-		}
-	}
+		else if (port_peek(stream) == '#')
+			while (!port_eof(stream) && port_getc(stream) != '\n') ;
+		else break;
 }
 
 void
@@ -78,10 +64,10 @@ skip_newline(string_port *stream)
 		port_getc(stream);
 }
 
-/* returns -1 on failure, length of the token on success */
-/* a word token cannot have length 0 but a string token can */
+/* returns -1 on failure, length of the token on success
+ * a word token cannot have length 0 but a string token can */
 int
-read_token(char *tok_buf, string_port *stream, int *out_should_expand, int *lex_err)
+read_token(char *tok_buf, string_port *stream, int *out_should_expand)
 {
 	int len = 0;
 	char c;
@@ -89,24 +75,21 @@ read_token(char *tok_buf, string_port *stream, int *out_should_expand, int *lex_
 	char quote;
 	int escape_char;
 
-	/* TOK(c) adds a character c to the buffer, erroring if we went over the limit */
+/* TOK(c) adds a character c to the buffer, erroring if we went over the limit */
 #define TOK(c)					\
 	if (len >= TOK_MAX-1)			\
 		reporterr("token too long");	\
 	tok_buf[len++] = c
 
-	*lex_err = 0;
 	*out_should_expand = EXPAND_DEFAULT;
 
-	// this routine is used to read the next
-	// token in a 'line' of tokens
-	// therefore we need to exit if we hit a
-	// newline or a comment
+/* this routine is used to read the next token in a 'line' of tokens therefore
+ * we need to exit if we hit a newline or a comment */
 st_restart:
 	skip_spaces(stream);
-	if (port_eof(stream)
-	    || port_peek(stream) == '\n'
-	    || port_peek(stream) == '#')
+	if (port_eof(stream) ||
+	    port_peek(stream) == '\n' ||
+	    port_peek(stream) == '#')
 		return -1;
 
 	goto st_tok; /* parse using a state machine */
@@ -148,7 +131,7 @@ st_word:
 	if (c == '\\') {
 		if (port_eof(stream))
 			return -1;
-		
+
 		c = port_getc(stream);
 	}
 
@@ -160,10 +143,9 @@ st_word_continue:
 			goto st_accept;
 		else
 			return -1;
-	}
-	else {
+	} else {
 		c = port_getc(stream);
-		
+
 		goto st_word;
 	}
 	
@@ -173,13 +155,10 @@ st_string:
 
 	c = port_getc(stream);
 	if (!escape_char && c == quote) {
-		// check that the very next char
-		// is not another string
-		if (is_quote_char(port_peek(stream))) {
-			*lex_err = 1;
-			reportret(-1, "strings too close together");
-		}
-		
+		/* check that the very next char is not another string */
+		if (is_quote_char(port_peek(stream)))
+			reportret(-2, "strings too close together");
+
 		goto st_accept;
 	} else if (!escape_char && c == '\\') {
 		escape_char = 1;
@@ -209,15 +188,12 @@ st_string:
 			TOK('`');
 			break;
 		default:
-			*lex_err = 1;
-			reportret(-1, "impossible escape");
+			reportret(-2, "impossible escape");
 		}
 		goto st_string;
 	} else {
-		if (escape_char) {
-			*lex_err = 1;
-			reportret(-1, "escaped a non-escapable char");
-		}
+		if (escape_char)
+			reportret(-2, "escaped a non-escapable char");
 		TOK(c);
 		goto st_string;
 	}
@@ -231,23 +207,15 @@ st_accept:
 char **
 read_tokens(region *r, string_port *stream)
 {
-	char tok_buf[TOK_MAX];
-	
-	char **tokens;
-	int i = 0;
-
-	int len;
-	int lex_err, should_expand;
-	
+	char tok_buf[TOK_MAX], **tokens, *result;
+	int i = 0, len, should_expand;
 	string_port port;
-	char *result;
 
 	tokens = region_malloc(r, sizeof(char*)*MAX_TOKS_PER_LINE);
-	
+
 	skip_spaces_and_comments(stream);
 
-	while ((len = read_token(tok_buf, stream,
-				 &should_expand, &lex_err)) != -1) {
+	while ((len = read_token(tok_buf, stream, &should_expand)) > -1) {
 		switch (should_expand) {
 		case EXPAND_DEFAULT:
 			if (!(tokens[i] = expand_variables(r, tok_buf, len)))
@@ -271,11 +239,10 @@ read_tokens(region *r, string_port *stream)
 		if (++i >= MAX_TOKS_PER_LINE)
 			reportret(NULL, "line too long");
 	}
-	
-	if (lex_err) {
+
+	if (len == -2)
 		return NULL;
-	}
-	
+
 	tokens[i] = NULL;
 
 	return tokens;
