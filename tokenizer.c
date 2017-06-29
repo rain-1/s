@@ -10,12 +10,6 @@
 #include "parser.h"
 #include "interpreter.h"
 
-/* TOK(c) adds a character c to the buffer, erroring if we went over the limit */
-#define TOK(c)					\
-	if (len >= TOK_MAX-1)			\
-		reporterr("token too long");	\
-	tok_buf[len++] = c
-
 enum {
 	EXPAND_DEFAULT,
 	EXPAND_NONE,
@@ -80,6 +74,12 @@ read_token(char *tok_buf, string_port *stream, int *out_should_expand)
 
 	char quote;
 	int escape_char;
+
+/* TOK(c) adds a character c to the buffer, erroring if we went over the limit */
+#define TOK(c)					\
+	if (len >= TOK_MAX-1)			\
+		reporterr("token too long");	\
+	tok_buf[len++] = c
 
 	*out_should_expand = EXPAND_DEFAULT;
 
