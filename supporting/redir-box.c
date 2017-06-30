@@ -8,16 +8,12 @@
 
 char buf[BUF_SIZE];
 
-enum { lt, gt, gtgt };
-
 int
 main(int argc, char **argv)
 {
-	int mode, s;
-	char *flags;
-	FILE *fin, *fout, *ftmp;
-
-	char *name;
+	int s;
+	char *flags, *name;
+	FILE *fin = stdin, *fout = stdout, *ftmp;
 
 	if (argc != 2) {
 		fprintf(stderr, "Error: Invoked with no arguments\n");
@@ -25,27 +21,12 @@ main(int argc, char **argv)
 	}
 
 	name = basename(argv[0]);
-	if (!strcmp("<", name)) mode = lt;
-	else if (!strcmp(">", name)) mode = gt;
-	else if (!strcmp(">>", name)) mode = gtgt;
+	if (!strcmp("<", name))       flags = "r";
+	else if (!strcmp(">", name))  flags = "w+";
+	else if (!strcmp(">>", name)) flags = "a+";
 	else {
 		fprintf(stderr, "Error: Invoked as unknown command [%s]\n", name);
 		return EXIT_FAILURE;
-	}
-
-	fin = stdin;
-	fout = stdout;
-
-	switch (mode) {
-	case lt:
-		flags = "r";
-		break;
-	case gt:
-		flags = "w+";
-		break;
-	case gtgt:
-		flags = "a+";
-		break;
 	}
 
 	if (!(ftmp = fopen(argv[1], flags))) {
@@ -53,7 +34,7 @@ main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	if (mode == lt)
+	if (flags[0] == 'r')
 		fin = ftmp;
 	else
 		fout = ftmp;
@@ -63,7 +44,7 @@ main(int argc, char **argv)
 
 		if (fwrite(buf, 1, s, fout) != s)
 			fprintf(stderr, "Writing error\n");
-	} while(s != -1 && s != 0);
+	} while(s != -1 && s);
 
 	fclose(fout);
 

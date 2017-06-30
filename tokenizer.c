@@ -228,7 +228,7 @@ read_tokens(region *r, string_port *stream)
 			break;
 		case EXPAND_EVAL:
 			port = (string_port){ .kind=STRPORT_CHAR, .text=tok_buf, .place=0 };
-			if (parse_and_execute(&port, &result) == 0)
+			if (!parse_and_execute(&port, &result))
 				tokens[i] = result;
 			else {
 				efree(result);
