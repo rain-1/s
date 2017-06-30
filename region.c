@@ -3,13 +3,14 @@
 
 #include "region.h"
 #include "reporting.h"
+#include "util.h"
 
 void
 region_create(region *r)
 {
 	r->len = 0;
 	r->alloc_len = 2;
-	r->pointers = malloc(sizeof(void*)*r->alloc_len);
+	r->pointers = emalloc(sizeof(void*)*r->alloc_len);
 }
 
 void *
@@ -17,10 +18,10 @@ region_malloc(region *r, size_t size)
 {
 	if (r->len >= r->alloc_len) {
 		r->alloc_len <<= 1;
-		r->pointers = realloc(r->pointers, sizeof(void*)*r->alloc_len);
+		r->pointers = erealloc(r->pointers, sizeof(void*)*r->alloc_len);
 	}
 
-	return r->pointers[r->len++] = malloc(size);
+	return r->pointers[r->len++] = emalloc(size);
 }
 
 void *
@@ -30,7 +31,7 @@ region_realloc(region *r, void *v, size_t size)
 
 	for (i = 0; i < r->len; i++)
 		if (r->pointers[i] == v)
-			return r->pointers[i] = realloc(r->pointers[i], size);
+			return r->pointers[i] = erealloc(r->pointers[i], size);
 
 	reporterr("unable to realloc region [%p]", v);
 }
@@ -41,9 +42,9 @@ region_free(region *r)
 	int i;
 
 	for (i = 0; i < r->len; i++)
-		free(r->pointers[i]);
+		efree(r->pointers[i]);
 
-	free(r->pointers);
+	efree(r->pointers);
 
 	r->pointers = NULL;
 }

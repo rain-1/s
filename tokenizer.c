@@ -9,6 +9,7 @@
 #include "reporting.h"
 #include "parser.h"
 #include "interpreter.h"
+#include "util.h"
 
 enum {
 	EXPAND_DEFAULT,
@@ -230,7 +231,7 @@ read_tokens(region *r, string_port *stream)
 			if (parse_and_execute(&port, &result) == 0)
 				tokens[i] = result;
 			else {
-				if (result) free(result);
+				efree(result);
 				reportret(NULL, "eval failed");
 			}
 			break;

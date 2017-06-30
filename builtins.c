@@ -14,8 +14,7 @@
 #include "parser.h"
 #include "interpreter.h"
 #include "builtins.h"
-
-#define LEN(X) (sizeof(X) / sizeof((X)[0]))
+#include "util.h"
 
 char cwd[PATH_MAX];
 char owd[PATH_MAX];

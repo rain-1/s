@@ -8,6 +8,7 @@
 #include "stringport.h"
 #include "tokenizer.h"
 #include "variables.h"
+#include "util.h"
 
 char varname[TOK_MAX];
 char *varerr;
@@ -50,10 +51,10 @@ expand_variables(region *r, char *tok, int t)
 int
 variable_character(char c)
 {
-	return c == '_'
-		|| ('A' <= c && c <= 'Z')
-		|| ('a' <= c && c <= 'z')
-		|| ('0' <= c && c <= '9');
+	return c == '_' ||
+	       BETWEEN(c, 'A', 'Z') ||
+	       BETWEEN(c, 'a', 'z') ||
+	       BETWEEN(c, '0', '9');
 }
 
 char *

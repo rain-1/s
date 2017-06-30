@@ -19,17 +19,17 @@ extern int interactive_mode;
 	reportprint(1, M, ##__VA_ARGS__); \
 	_exit(1);                         \
 }
+#define report(M, ...) {                  \
+	reportprint(0, M, ##__VA_ARGS__); \
+	if (!interactive_mode)            \
+		exit(1);                  \
+}
 #define reportret(R, M, ...) {            \
 	reportprint(0, M, ##__VA_ARGS__); \
 	if (!interactive_mode)            \
 		exit(1);                  \
 	else                              \
 		return R;                 \
-}
-#define report(M, ...) {                  \
-	reportprint(0, M, ##__VA_ARGS__); \
-	if (!interactive_mode)            \
-		exit(1);                  \
 }
 #define reportvar(V, M) { \
 	V = M;            \
