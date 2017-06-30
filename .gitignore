@@ -1,17 +1,8 @@
-test_commands
 *.swp
 *~
 *.o
-t1
-t2
-t3
-t4
-t5
-t6
 *.core
-test_commands
 linenoise
 s
 supporting/*
-out/*
 tags
