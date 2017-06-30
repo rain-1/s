@@ -81,8 +81,8 @@ uninstall:
 	@rm -f $(DESTDIR)$(MANPREFIX)/man1/$(EXE).1
 	@echo \ done
 
-test:
+test: $(EXE)
 	@echo running tests
-	@cd t; ./run-tests.sh
+	@cd t; ./run.sh
 
 .PHONY: all options clean install uninstall test
