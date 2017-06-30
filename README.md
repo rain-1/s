@@ -153,7 +153,7 @@ BUILTINS
      cd [DIR | -]
              Change current working directory to DIR.  If DIR is not supplied,
              change to $HOME instead.  If - is given switch directories to pre‐
-             vious working directory, stored in $OLDPWD.
+             vious working directory, stored in $OWD.
 
      set VAR VAL
              Set the environment variable given by VAR equal to VAL.
@@ -171,7 +171,7 @@ ENVIRONMENT
 
      PWD     Current working directory.
 
-     OLDPWD  Previous working directory.
+     OWD     Previous working directory.
 
      PATH    A colon-separated list of directories in which s looks for com‐
              mands in.
