@@ -22,7 +22,7 @@ int debug = 0;
 void
 handler_sigint(int sig)
 {
-  /* signal(sig, SIG_IGN); */
+	/* signal(sig, SIG_IGN); */
 }
 
 static void
