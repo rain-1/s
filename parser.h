@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+
 typedef enum {
 	NODE_COMMAND = 0,
 	NODE_PIPE = 1,

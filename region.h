@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+
 typedef struct {
 	size_t len;
 	size_t alloc_len;

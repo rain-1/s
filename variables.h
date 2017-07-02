@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+
 extern char variable_name[TOK_MAX];
 
 char *read_variable_prefix(char *tok);

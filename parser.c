@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+/* call tokenizer from stringport, generating an AST */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

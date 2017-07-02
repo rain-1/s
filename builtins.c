@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+/* user commands built directly into s */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

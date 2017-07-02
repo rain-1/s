@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+
 #define TOK_MAX 4096
 #define MAX_TOKS_PER_LINE 4096
 

@@ -1,4 +1,5 @@
-/* See LICENSE file for copyright and license details. */
+/* see LICENSE file for copyright and license details */
+/* dynamic memory error checking */
 #include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>

@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+/* recursive walk down the AST, implementing the various operators */
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>

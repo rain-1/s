@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+/* report errors or warnings */
 
 extern char *argv0;
 extern int debug;

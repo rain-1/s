@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+/* command line interpreter */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
