@@ -1,8 +1,10 @@
+/* see LICENSE file for copyright and license details */
+
 typedef enum {
-	NODE_COMMAND = 0,
-	NODE_PIPE = 1,
-	NODE_CONJ = 2,
-	NODE_DISJ = 3,
+	NODE_COMMAND,
+	NODE_PIPE,
+	NODE_CONJ,
+	NODE_DISJ,
 } NodeType;
 
 struct AST {

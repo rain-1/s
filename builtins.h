@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+
 typedef struct {
 	char *name;
 	void (*func)(char **);

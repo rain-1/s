@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+/* recursive walk down the AST, implementing the various operators */
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -13,6 +15,7 @@
 #include "parser.h"
 #include "interpreter.h"
 #include "builtins.h"
+#include "util.h"
 
 #include "linenoise.h"
 
@@ -231,7 +234,7 @@ interpreter_loop(FILE *f)
 		if (interactive_mode) {
 			/* TODO: Only add if command was sucessful? */
 			linenoiseHistoryAdd(port.text);
-			free(port.text);
+			efree(port.text);
 		} else {
 			skip_newline(&port);
 		}

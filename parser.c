@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+/* call tokenizer from stringport, generating an AST */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,71 +17,69 @@ char *operator_for[] = {
 };
 
 struct AST *
-parse_binop(region *r, char **tokens, NodeType ty)
+parse_binop(region *r, char **toks, NodeType ty)
 {
-	char **stokens;
+	char **stoks = toks;
 	struct AST* n;
 	struct AST* m;
 
-	stokens = tokens;
-
 	if (ty == NODE_COMMAND) {
-		if (!tokens[0])
-			reportret(NULL, "bad syntax, zero-length command");
+		if (!toks[0])
+			reportret(NULL, "zero-length command");
 		n = region_malloc(r, sizeof(struct AST));
 		n->type = NODE_COMMAND;
-		n->node.tokens = stokens;
+		n->node.tokens = stoks;
 
 		return n;
 	}
 
-	while (tokens[0]) {
-		if (!strcmp(operator_for[ty], tokens[0])) {
-			tokens[0] = NULL;
+	while (toks[0]) {
+		if (!strcmp(operator_for[ty], toks[0])) {
+			toks[0] = NULL;
 
 			m = region_malloc(r, sizeof(struct AST));
 			m->type = ty;
-			if (!(m->node.child.l = parse_binop(r, stokens, ty-1)))
+			if (!(m->node.child.l = parse_binop(r, stoks, ty-1)))
 				return NULL;
-			if (!(m->node.child.r = parse_binop(r, tokens+1, ty)))
+			if (!(m->node.child.r = parse_binop(r, toks+1, ty)))
 				return NULL;
 
 			return m;
 		} else {
-			tokens++;
+			toks++;
 		}
 	}
 
-	return parse_binop(r, stokens, ty-1);
+	return parse_binop(r, stoks, ty-1);
 }
 
 struct AST *
-parse_tokens(region *r, char **tokens, int *bg_flag)
+parse_tokens(region *r, char **toks, int *bg)
 {
-	int i = 0;
+	int tokc = 0;
 
-	while (tokens[i])
-		i++;
+	while (toks[tokc])
+		tokc++;
 
-	if (i > 0 && !strcmp("&", tokens[i-1])) {
-		*bg_flag = 1;
-		tokens[--i] = NULL;
+	if (tokc > 0 && !strcmp("&", toks[--tokc])) {
+		*bg = 1;
+		toks[tokc] = NULL;
 	} else {
-		*bg_flag = 0;
+		*bg = 0;
 	}
 
-	return parse_binop(r, tokens, NODE_DISJ);
+	return parse_binop(r, toks, NODE_DISJ);
 }
 
 struct AST *
-parse(region *r, string_port *port, int *bg_flag)
+parse(region *r, string_port *port, int *bg)
 {
-	char **tokens = read_tokens(r, port);
+	char **toks = read_tokens(r, port);
 
-	if (!tokens)
+	if (!toks)
 		return NULL;
-	if (tokens[0])
-		return parse_tokens(r, tokens, bg_flag);
+	if (toks[0])
+		return parse_tokens(r, toks, bg);
 
 	return NULL;
 }

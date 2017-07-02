@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+/* user commands built directly into s */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,8 +16,7 @@
 #include "parser.h"
 #include "interpreter.h"
 #include "builtins.h"
-
-#define LEN(X) (sizeof(X) / sizeof((X)[0]))
+#include "util.h"
 
 char cwd[PATH_MAX];
 char owd[PATH_MAX];
@@ -76,8 +77,8 @@ builtin_cd(char **argv)
 		if (!(dir = getenv("HOME")))
 			reportret(,"%s: invalid $HOME", argv[0]);
 	} else if (strcmp(dir, "-") == 0) {
-		if (!(dir = getenv("OLDPWD")))
-			reportret(,"%s: invalid $OLDPWD", argv[0]);
+		if (!(dir = getenv("OWD")))
+			reportret(,"%s: invalid $OWD", argv[0]);
 		isowd = 1;
 	}
 
@@ -87,7 +88,7 @@ builtin_cd(char **argv)
 	} else {
 		getcwd(cwd, PATH_MAX);
 		setenv("PWD", cwd, 1);
-		setenv("OLDPWD", owd, 1);
+		setenv("OWD", owd, 1);
 		if (isowd)
 			printf("%s\n", dir);
 	}

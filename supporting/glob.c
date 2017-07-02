@@ -9,28 +9,24 @@ main(int argc, char **argv)
 {
 	int i;
 	glob_t g;
-	int res;
 
-	argc--;
-	argv++;
-
-	g.gl_offs = 0;
-
-	for (i = 0; i < argc; i++) {
-		res = glob(argv[i], GLOB_DOOFFS | (i ? GLOB_APPEND : 0) | (strchr(argv[i], '*') ? 0 : GLOB_NOCHECK), NULL, &g);
-		if (!res) {
-			if (res == GLOB_NOSPACE) {
-				fprintf(stderr, "glob: GLOB_NOSPACE - running out of memory\n");
-				return EXIT_FAILURE;
-			} else if (res == GLOB_ABORTED) {
-				fprintf(stderr, "glob: GLOB_ABORTED - read error\n");
-				return EXIT_FAILURE;
-			} else if (res == GLOB_NOMATCH) {
-				fprintf(stderr, "glob: GLOB_NOMATCH - no matches\n");
-				return EXIT_FAILURE;
-			}
-		}
+	if (argc < 2) {
+		fprintf(stderr, "glob: invoked with no arguments\n");
+		return EXIT_FAILURE;
 	}
+
+	for (i = 1; i < argc; i++)
+		switch (glob(argv[i], (i-1 ? GLOB_APPEND : 0) |
+		             (strchr(argv[i], '*') ? 0 : GLOB_NOCHECK),
+		             NULL, &g)) {
+		case GLOB_NOSPACE:
+			fprintf(stderr, "glob: running out of memory\n");
+		case GLOB_ABORTED:
+			fprintf(stderr, "glob: read error\n");
+		case GLOB_NOMATCH:
+			fprintf(stderr, "glob: no matches\n");
+			return EXIT_FAILURE;
+		}
 
 	if (!g.gl_pathv[0]) {
 		fprintf(stderr, "glob: NULL\n");
@@ -39,6 +35,6 @@ main(int argc, char **argv)
 
 	execvp(g.gl_pathv[0], g.gl_pathv);
 
-	fprintf(stderr, "Error: could not execute %s\n", g.gl_pathv[0]);
+	fprintf(stderr, "glob: could not execute %s\n", g.gl_pathv[0]);
 	return EXIT_FAILURE;
 }

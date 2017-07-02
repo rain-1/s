@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+/* split stringport input into a string array for each token */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,6 +11,7 @@
 #include "reporting.h"
 #include "parser.h"
 #include "interpreter.h"
+#include "util.h"
 
 enum {
 	EXPAND_DEFAULT,
@@ -227,10 +230,10 @@ read_tokens(region *r, string_port *stream)
 			break;
 		case EXPAND_EVAL:
 			port = (string_port){ .kind=STRPORT_CHAR, .text=tok_buf, .place=0 };
-			if (parse_and_execute(&port, &result) == 0)
+			if (!parse_and_execute(&port, &result))
 				tokens[i] = result;
 			else {
-				if (result) free(result);
+				efree(result);
 				reportret(NULL, "eval failed");
 			}
 			break;

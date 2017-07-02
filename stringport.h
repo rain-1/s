@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+
 #define STRPORT_CHAR 0
 #define STRPORT_FILE 1
 

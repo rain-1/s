@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+/* expand variables into their stored value */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,6 +10,7 @@
 #include "stringport.h"
 #include "tokenizer.h"
 #include "variables.h"
+#include "util.h"
 
 char varname[TOK_MAX];
 char *varerr;
@@ -17,7 +20,7 @@ expand_variables(region *r, char *tok, int t)
 {
 	char *stok = tok, *o, *val;
 	int alloc_len = t+1;
-	int i = 0, l;
+	int pos = 0, l;
 
 	o = region_malloc(r, alloc_len);
 
@@ -25,7 +28,7 @@ expand_variables(region *r, char *tok, int t)
 		if (*tok == '$') {
 			if (!(tok = read_variable_prefix(tok)))
 				reportret(NULL, "problem parsing variable '%s' at character %d: %s",
-				          stok, i, varerr);
+				          stok, pos, varerr);
 
 			if (!(val = getenv(varname)))
 				reportret(NULL, "reference to undefined variable '%s'", stok);
@@ -37,12 +40,12 @@ expand_variables(region *r, char *tok, int t)
 				reportret(NULL, "variable expansion blew up token size too large");
 
 			o = region_realloc(r, o, alloc_len);
-			memcpy(o + i, val, l);
-			i += l;
+			memcpy(o + pos, val, l);
+			pos += l;
 		} else {
-			o[i++] = *tok++;
+			o[pos++] = *tok++;
 		}
-	o[i] = '\0';
+	o[pos] = '\0';
 
 	return o;
 }
@@ -50,17 +53,17 @@ expand_variables(region *r, char *tok, int t)
 int
 variable_character(char c)
 {
-	return c == '_'
-		|| ('A' <= c && c <= 'Z')
-		|| ('a' <= c && c <= 'z')
-		|| ('0' <= c && c <= '9');
+	return c == '_' ||
+	       BETWEEN(c, 'A', 'Z') ||
+	       BETWEEN(c, 'a', 'z') ||
+	       BETWEEN(c, '0', '9');
 }
 
 char *
 read_variable_prefix(char *tok)
 {
-	int i = 0;
-	int bracket = 0;
+	int pos = 0;
+	int brc = 0;
 
 	assert(*tok == '$');
 	tok++;
@@ -70,19 +73,19 @@ read_variable_prefix(char *tok)
 	/* ...lets see if this ever bites? */
 
 	if (*tok == '{') {
-		bracket = 1;
+		brc = 1;
 		tok++;
 	}
 
 	while (variable_character(*tok))
-		varname[i++] = *tok++;
+		varname[pos++] = *tok++;
 
-	if (bracket && *tok++ != '}')
+	if (brc && *tok++ != '}')
 		reportvar(varerr, "missing '}'");
 
-	varname[i] = '\0';
+	varname[pos] = '\0';
 
-	if (!i)
+	if (!pos)
 		reportvar(varerr, "length 0 variable");
 
 	return tok;

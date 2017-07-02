@@ -1,3 +1,5 @@
+/* see LICENSE file for copyright and license details */
+/* command line interpreter */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,7 +22,7 @@ int debug = 0;
 void
 handler_sigint(int sig)
 {
-  /* signal(sig, SIG_IGN); */
+	/* signal(sig, SIG_IGN); */
 }
 
 static void
