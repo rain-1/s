@@ -41,7 +41,7 @@ interpret_junction(struct AST* n)
 		interpret_command(n);
 
 	switch (p = fork()) {
-	case -1: 
+	case -1:
 		_reporterr("fork() failure");
 		break;
 	case 0:

@@ -16,7 +16,7 @@ char *operator_for[] = {
 	[NODE_DISJ] = "||",
 };
 
-struct AST *
+static struct AST *
 parse_binop(region *r, char **toks, NodeType ty)
 {
 	char **stoks = toks;
@@ -53,7 +53,7 @@ parse_binop(region *r, char **toks, NodeType ty)
 	return parse_binop(r, stoks, ty-1);
 }
 
-struct AST *
+static struct AST *
 parse_tokens(region *r, char **toks, int *bg)
 {
 	int tokc = 0;

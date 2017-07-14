@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "stringport.h"
+#include "reporting.h"
 
 int
 port_peek(string_port *port)
@@ -15,9 +16,8 @@ port_peek(string_port *port)
 		c = fgetc(port->fptr);
 		ungetc(c, port->fptr);
 		return c;
-	default:
-		exit(1);
 	}
+	reporterr("port set to wrong kind");
 }
 
 int
@@ -28,9 +28,8 @@ port_eof(string_port *port)
 		return port->text[port->place] == '\0';
 	case STRPORT_FILE:
 		return feof(port->fptr);
-	default:
-		exit(1);
 	}
+	reporterr("port set to wrong kind");
 }
 
 int
@@ -46,7 +45,6 @@ port_getc(string_port *port)
 		return c;
 	case STRPORT_FILE:
 		return fgetc(port->fptr);
-	default:
-		exit(1);
 	}
+	reporterr("port set to wrong kind");
 }

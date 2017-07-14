@@ -60,8 +60,6 @@ builtin_source(char **argv)
 	mode = interactive_mode;
 	interactive_mode = 0;
 
-	vars_set(argv);
-
 	interpreter_loop(f);
 
 	interactive_mode = mode;

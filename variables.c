@@ -15,6 +15,48 @@
 char varname[TOK_MAX];
 char *varerr;
 
+
+static int
+variable_character(char c)
+{
+	return c == '_' ||
+	       BETWEEN(c, 'A', 'Z') ||
+	       BETWEEN(c, 'a', 'z') ||
+	       BETWEEN(c, '0', '9');
+}
+
+static char *
+read_variable_prefix(char *tok)
+{
+	int pos = 0;
+	int brc = 0;
+
+	assert(*tok == '$');
+	tok++;
+
+	/* NOTE: We don't bother to bounds check here */
+	/* because tok is already <= the size of a token */
+	/* ...lets see if this ever bites? */
+
+	if (*tok == '{') {
+		brc = 1;
+		tok++;
+	}
+
+	while (variable_character(*tok))
+		varname[pos++] = *tok++;
+
+	if (brc && *tok++ != '}')
+		reportvar(varerr, "missing '}'");
+
+	varname[pos] = '\0';
+
+	if (!pos)
+		reportvar(varerr, "length 0 variable");
+
+	return tok;
+}
+
 char *
 expand_variables(region *r, char *tok, int t)
 {
@@ -48,45 +90,4 @@ expand_variables(region *r, char *tok, int t)
 	o[pos] = '\0';
 
 	return o;
-}
-
-int
-variable_character(char c)
-{
-	return c == '_' ||
-	       BETWEEN(c, 'A', 'Z') ||
-	       BETWEEN(c, 'a', 'z') ||
-	       BETWEEN(c, '0', '9');
-}
-
-char *
-read_variable_prefix(char *tok)
-{
-	int pos = 0;
-	int brc = 0;
-
-	assert(*tok == '$');
-	tok++;
-
-	/* NOTE: We don't bother to bounds check here */
-	/* because tok is already <= the size of a token */
-	/* ...lets see if this ever bites? */
-
-	if (*tok == '{') {
-		brc = 1;
-		tok++;
-	}
-
-	while (variable_character(*tok))
-		varname[pos++] = *tok++;
-
-	if (brc && *tok++ != '}')
-		reportvar(varerr, "missing '}'");
-
-	varname[pos] = '\0';
-
-	if (!pos)
-		reportvar(varerr, "length 0 variable");
-
-	return tok;
 }
