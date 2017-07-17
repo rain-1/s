@@ -20,4 +20,4 @@ struct AST {
 
 extern char *operator_for[];
 
-struct AST* parse(region *r, string_port *port, int *bg_flag);
+struct AST *parse(region *r, string_port *port, int *bg_flag);

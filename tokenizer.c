@@ -206,7 +206,7 @@ read_tokens(region *r, string_port *stream)
 			break;
 		case EXPAND_EVAL:
 			port = (string_port){ .kind=STRPORT_CHAR, .text=tok_buf, .place=0 };
-			if (!parse_and_execute(&port, &result))
+			if (!parse_and_execute(&port, &result)) /* TODO fix result memory leak */
 				tokens[i] = result;
 			else {
 				efree(result);
