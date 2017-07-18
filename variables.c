@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <unistd.h>
 
 #include "region.h"
 #include "reporting.h"
@@ -15,6 +16,20 @@
 char varname[TOK_MAX];
 char *varerr;
 
+void
+vars_set(char **argv)
+{
+	int i = 0;
+	char var[8];
+	/* char varcat[ARG_MAX_STRLEN]; */
+	long max = sysconf(_SC_ARG_MAX);
+
+	for (argv++; *argv && i < max; argv++, i++) {
+		sprintf(var, "%d", i);
+		setenv(var, *argv, 1);
+	}
+	setenv("#", var, 1);
+}
 
 static int
 variable_character(char c)
@@ -43,7 +58,7 @@ read_variable_prefix(char *tok)
 		tok++;
 	}
 
-	while (variable_character(*tok))
+	while (variable_character(*tok) || (!pos && *tok == '#'))
 		varname[pos++] = *tok++;
 
 	if (brc && *tok++ != '}')

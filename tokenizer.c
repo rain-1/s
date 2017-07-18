@@ -72,7 +72,7 @@ skip_newline(string_port *stream)
 static int
 read_token(char *tok_buf, string_port *stream, int *out_should_expand)
 {
-	int len = 0, escape_char, i;
+	int len = 0, escape_char, i, var = 0;
 	char c, quote;
 
 /* TOK(c) adds a character c to the buffer, erroring if it went over the limit */
@@ -122,6 +122,9 @@ st_tok:
 			goto st_restart;
 		} else
 			goto st_word;
+	} else if (c == '$') {
+		var = 1;
+		goto st_word;
 	} else {
 		goto st_word;
 	}
@@ -137,7 +140,8 @@ st_word:
 	TOK(c);
 
 st_word_continue:
-	if (port_eof(stream) || is_eot(port_peek(stream))) {
+	if ((port_eof(stream) || is_eot(port_peek(stream))) &&
+	    !(port_peek(stream) == '#' && var)) {
 		if (len)
 			goto st_accept;
 		else
@@ -173,6 +177,7 @@ st_string:
 	} else {
 		if (escape_char)
 			reportret(-2, "escaped a non-escapable char");
+		var = 0;
 		TOK(c);
 		goto st_string;
 	}

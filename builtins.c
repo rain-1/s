@@ -13,6 +13,7 @@
 #include "reporting.h"
 #include "region.h"
 #include "stringport.h"
+#include "variables.h"
 #include "parser.h"
 #include "interpreter.h"
 #include "builtins.h"
@@ -59,6 +60,8 @@ builtin_source(char **argv)
 
 	mode = interactive_mode;
 	interactive_mode = 0;
+
+	vars_set(argv);
 
 	interpreter_loop(f);
 
