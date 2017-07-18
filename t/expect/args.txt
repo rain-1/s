@@ -1,0 +1,2 @@
+tmp.s foo bar 2
+tmp.s cat dog 3
