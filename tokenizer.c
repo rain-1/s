@@ -19,6 +19,14 @@ enum {
 	EXPAND_EVAL,
 };
 
+static int is_quote(char c) {
+	return c && strchr("\"'`", c);
+}
+
+static int is_eot(char c) {
+	return c && strchr(" \t\n\r#", c);
+}
+
 char escs[][2] = {
 	{ '\\', '\\' },
 	{ 't',  '\t' },
