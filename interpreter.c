@@ -241,5 +241,7 @@ interpreter_loop(FILE *f)
 		}
 	} while (!feof(f));
 
+	fclose(f);
+
 	vars_unset();
 }

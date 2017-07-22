@@ -71,7 +71,5 @@ main(int argc, char **argv)
 
 	interpreter_loop(f);
 
-	fclose(f);
-
 	return 0;
 }
