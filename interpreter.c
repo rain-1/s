@@ -12,6 +12,7 @@
 #include "region.h"
 #include "stringport.h"
 #include "tokenizer.h"
+#include "variables.h"
 #include "parser.h"
 #include "interpreter.h"
 #include "builtins.h"
@@ -239,4 +240,6 @@ interpreter_loop(FILE *f)
 			skip_newline(&port);
 		}
 	} while (!feof(f));
+
+	vars_unset();
 }

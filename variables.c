@@ -16,6 +16,7 @@
 char varname[TOK_MAX];
 char *varerr;
 
+/* set positional variables before loading file */
 void
 vars_set(char **argv)
 {
@@ -29,6 +30,22 @@ vars_set(char **argv)
 		setenv(var, *argv, 1);
 	}
 	setenv("#", var, 1);
+}
+
+/* remove positional variables to prevent leakage */
+void
+vars_unset(void)
+{
+	int i = 0;
+	char var[8];
+	long max = sysconf(_SC_ARG_MAX);
+
+	for (; i < max; i++) {
+		sprintf(var, "%d", i);
+		if (!getenv(var)) break;
+		unsetenv(var);
+	}
+	unsetenv("#");
 }
 
 static int
