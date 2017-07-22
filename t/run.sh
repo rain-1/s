@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PATH="$PATH:../supporting/"
+
 total=0
 pass=0
 
