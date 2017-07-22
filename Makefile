@@ -39,7 +39,7 @@ supporting: supporting/redir-box supporting/glob
 
 linenoise:
 	@echo "This project requires the linenoise library!"
-	@echo "git clone https://github.com/antirez/linenoise.git"
+	@echo "(git clone https://github.com/antirez/linenoise.git ; cd linenoise ; git reset --hard 2105ce445821381cf1bca87b6d386d4ea88ee20d)"
 	@exit 1
 
 ${OBJ}: config.mk
