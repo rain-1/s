@@ -26,7 +26,7 @@ vars_set(char **argv)
 	long max = sysconf(_SC_ARG_MAX);
 
 	for (argv++; *argv && i < max; argv++, i++) {
-		sprintf(var, "%d", i);
+		snprintf(var, sizeof var, "%d", i);
 		setenv(var, *argv, 1);
 	}
 	setenv("#", var, 1);
@@ -41,7 +41,7 @@ vars_unset(void)
 	long max = sysconf(_SC_ARG_MAX);
 
 	for (; i < max; i++) {
-		sprintf(var, "%d", i);
+		snprintf(var, sizeof var, "%d", i);
 		if (!getenv(var)) break;
 		unsetenv(var);
 	}
