@@ -19,24 +19,24 @@ enum {
 	EXPAND_EVAL,
 };
 
-static int
-is_quote_char(int chr)
-{
-	return chr == '"' || chr == '\'' || chr == '`';
-}
+char escs[][2] = {
+	{ '\\', '\\' },
+	{ 't',  '\t' },
+	{ 'n',  '\n' },
+	{ 'r',  '\r' },
+	{ '"',  '"'  },
+	{ '\'', '\'' },
+	{ '`',  '`'  }
+};
 
 static int
-is_escape_char(int chr)
+is_esc(int c)
 {
-	return chr == '\\' || chr == 't' || chr == 'n' || chr == 'r' ||
-	       is_quote_char(chr);
-}
-
-static int
-token_end(int chr)
-{
-	return chr == ' ' || chr == '\t' || chr == '\n' || chr == '\r' ||
-	       chr == '#';
+	int i;
+	for (i = 0; i < LEN(escs); i++)
+		if (escs[i][0] == c)
+			return 1;
+	return 0;
 }
 
 static void
@@ -69,18 +69,15 @@ skip_newline(string_port *stream)
 
 /* returns -1 on failure, length of the token on success
  * a word token cannot have length 0 but a string token can */
-int
+static int
 read_token(char *tok_buf, string_port *stream, int *out_should_expand)
 {
-	int len = 0;
-	char c;
+	int len = 0, escape_char, i, var = 0;
+	char c, quote;
 
-	char quote;
-	int escape_char;
-
-/* TOK(c) adds a character c to the buffer, erroring if we went over the limit */
+/* TOK(c) adds a character c to the buffer, erroring if it went over the limit */
 #define TOK(c)					\
-	if (len >= TOK_MAX-1)			\
+	if (len > TOK_MAX)			\
 		reporterr("token too long");	\
 	tok_buf[len++] = c
 
@@ -100,7 +97,7 @@ st_restart:
 st_tok:
 	c = port_getc(stream);
 
-	if (is_quote_char(c)) {
+	if (is_quote(c)) {
 		quote = c;
 		escape_char = 0;
 
@@ -123,9 +120,11 @@ st_tok:
 		if (port_peek(stream) == '\n') {
 			port_getc(stream);
 			goto st_restart;
-		}
-		else
+		} else
 			goto st_word;
+	} else if (c == '$') {
+		var = 1;
+		goto st_word;
 	} else {
 		goto st_word;
 	}
@@ -141,7 +140,8 @@ st_word:
 	TOK(c);
 
 st_word_continue:
-	if (port_eof(stream) || token_end(port_peek(stream))) {
+	if ((port_eof(stream) || is_eot(port_peek(stream))) &&
+	    !(port_peek(stream) == '#' && var)) {
 		if (len)
 			goto st_accept;
 		else
@@ -151,7 +151,7 @@ st_word_continue:
 
 		goto st_word;
 	}
-	
+
 st_string:
 	if (port_eof(stream))
 		return -1;
@@ -159,44 +159,25 @@ st_string:
 	c = port_getc(stream);
 	if (!escape_char && c == quote) {
 		/* check that the very next char is not another string */
-		if (is_quote_char(port_peek(stream)))
+		if (is_quote(port_peek(stream)))
 			reportret(-2, "strings too close together");
 
 		goto st_accept;
 	} else if (!escape_char && c == '\\') {
 		escape_char = 1;
 		goto st_string;
-	} else if (escape_char && is_escape_char(c)) {
+	} else if (escape_char && is_esc(c)) {
 		escape_char = 0;
-		switch(c) {
-		case '\\':
-			TOK('\\');
-			break;
-		case 't':
-			TOK('\t');
-			break;
-		case 'n':
-			TOK('\n');
-			break;
-		case 'r':
-			TOK('\r');
-			break;
-		case '"':
-			TOK('"');
-			break;
-		case '\'':
-			TOK('\'');
-			break;
-		case '`':
-			TOK('`');
-			break;
-		default:
-			reportret(-2, "impossible escape");
-		}
-		goto st_string;
+		for (i = 0; i < LEN(escs); i++)
+			if (escs[i][0] == c) {
+				TOK(escs[i][1]);
+				goto st_string;
+			}
+		reportret(-2, "impossible escape");
 	} else {
 		if (escape_char)
 			reportret(-2, "escaped a non-escapable char");
+		var = 0;
 		TOK(c);
 		goto st_string;
 	}
@@ -230,7 +211,7 @@ read_tokens(region *r, string_port *stream)
 			break;
 		case EXPAND_EVAL:
 			port = (string_port){ .kind=STRPORT_CHAR, .text=tok_buf, .place=0 };
-			if (!parse_and_execute(&port, &result))
+			if (!parse_and_execute(&port, &result)) /* TODO fix result memory leak */
 				tokens[i] = result;
 			else {
 				efree(result);

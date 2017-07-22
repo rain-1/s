@@ -1,10 +1,9 @@
 /* see LICENSE file for copyright and license details */
 
-#define STRPORT_CHAR 0
-#define STRPORT_FILE 1
+typedef enum { STRPORT_CHAR, STRPORT_FILE } Strport;
 
 typedef struct {
-  int kind;
+  Strport kind;
 
   /* kind=STRPORT_CHAR */
   char *text;

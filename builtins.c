@@ -13,6 +13,8 @@
 #include "reporting.h"
 #include "region.h"
 #include "stringport.h"
+#include "tokenizer.h"
+#include "variables.h"
 #include "parser.h"
 #include "interpreter.h"
 #include "builtins.h"

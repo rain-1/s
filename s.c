@@ -1,5 +1,6 @@
 /* see LICENSE file for copyright and license details */
 /* command line interpreter */
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,6 +13,7 @@
 #include "reporting.h"
 #include "stringport.h"
 #include "tokenizer.h"
+#include "variables.h"
 #include "parser.h"
 #include "interpreter.h"
 #include "builtins.h"
@@ -61,6 +63,8 @@ main(int argc, char **argv)
 	} else {
 		if (!(f = fopen(argv[1], "r")))
 			reporterr("source: %s: could not load file", argv[1]);
+
+		vars_set(argv);
 
 		interactive_mode = 0;
 	}

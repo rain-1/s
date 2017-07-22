@@ -12,6 +12,7 @@
 #include "region.h"
 #include "stringport.h"
 #include "tokenizer.h"
+#include "variables.h"
 #include "parser.h"
 #include "interpreter.h"
 #include "builtins.h"
@@ -41,7 +42,7 @@ interpret_junction(struct AST* n)
 		interpret_command(n);
 
 	switch (p = fork()) {
-	case -1: 
+	case -1:
 		_reporterr("fork() failure");
 		break;
 	case 0:
@@ -239,4 +240,8 @@ interpreter_loop(FILE *f)
 			skip_newline(&port);
 		}
 	} while (!feof(f));
+
+	fclose(f);
+
+	vars_unset();
 }
