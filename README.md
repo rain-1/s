@@ -130,7 +130,7 @@ SYNTAX
      The grammar is line based. Sequences of tokens are treated as commands and
      the operators |, &&, and || are parsed in order of tightest binding first.
 
-     File redirection is achieve through the use of separate commands, thus
+     File redirection is done with separate commands,
      pipes are needed:
 
              s$ echo "hello world" | > file.txt
