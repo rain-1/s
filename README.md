@@ -121,8 +121,8 @@ SYNTAX
      Backticks can also be used to expand commands quoted inside to their out‐
      put:
 
-             s$ rm `cat oldfiles.txt` # delete all files found in oldfiles.txt
-             s$ set CFILES `ls *.c`   # make $CFILES equal to a list of all C files
+             s$ xargs rm `cat oldfiles.txt` # delete all files found in oldfiles.txt
+             s$ set CFILES `glob *.c`   # make $CFILES equal to a list of all C files
 
      The # character, as seen above, starts a comment until the end of the
      line.
