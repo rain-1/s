@@ -49,8 +49,10 @@ main(int argc, char **argv)
 		return 0;
 	case 'h':
 		usage(0);
+		return 0;
 	default:
 		usage(1);
+		return 1;
 	} ARGEND;
 
 	signal(SIGINT, handler_sigint);
