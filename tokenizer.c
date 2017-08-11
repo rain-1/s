@@ -40,7 +40,7 @@ char escs[][2] = {
 static int
 is_esc(int c)
 {
-	int i;
+	size_t i;
 	for (i = 0; i < LEN(escs); i++)
 		if (escs[i][0] == c)
 			return 1;
@@ -80,7 +80,9 @@ skip_newline(string_port *stream)
 static int
 read_token(char *tok_buf, string_port *stream, int *out_should_expand)
 {
-	int len = 0, escape_char, i, var = 0;
+	size_t len = 0;
+	size_t i = 0;
+	int escape_char, var = 0;
 	char c, quote;
 
 /* TOK(c) adds a character c to the buffer, erroring if it went over the limit */
@@ -176,7 +178,7 @@ st_string:
 		goto st_string;
 	} else if (escape_char && is_esc(c)) {
 		escape_char = 0;
-		for (i = 0; i < LEN(escs); i++)
+		for (i = 0; i < (size_t)LEN(escs); i++)
 			if (escs[i][0] == c) {
 				TOK(escs[i][1]);
 				goto st_string;

@@ -34,7 +34,7 @@ Builtin builtins[] = {
 int
 perform_builtin(struct AST *n)
 {
-	int i;
+	size_t i;
 
 	if (n->type != NODE_COMMAND || !n->node.tokens[0])
 		return 0;
