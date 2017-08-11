@@ -11,7 +11,7 @@ LIBS =
 
 # flags
 CPPFLAGS = -DVERSION=\"$(VERSION)\" -D_GNU_SOURCE
-CFLAGS = -g -std=c99 -Wall ${INCS} ${CPPFLAGS}
+CFLAGS = -g -std=c99 -Wall -Wextra ${INCS} ${CPPFLAGS}
 LDFLAGS = -g ${LIBS}
 
 # compiler and linker

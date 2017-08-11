@@ -24,6 +24,7 @@ int debug = 0;
 void
 handler_sigint(int sig)
 {
+	sig = sig; /* get rid of compiler warnings from -Wextra */
 	/* signal(sig, SIG_IGN); */
 }
 

@@ -28,7 +28,7 @@ region_malloc(region *r, size_t size)
 void *
 region_realloc(region *r, void *v, size_t size)
 {
-	int i;
+	size_t i;
 
 	for (i = 0; i < r->len; i++)
 		if (r->pointers[i] == v)
@@ -40,7 +40,7 @@ region_realloc(region *r, void *v, size_t size)
 void
 region_free(region *r)
 {
-	int i;
+	size_t i;
 
 	for (i = 0; i < r->len; i++)
 		efree(r->pointers[i]);
