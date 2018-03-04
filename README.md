@@ -1,15 +1,15 @@
 # s
 
 After the [Shellshock](https://en.wikipedia.org/wiki/Shellshock_(software_bug))
-bug happened they fixed the parsing bug in bash that let people hijack
+bug happened, they fixed the parsing bug in bash that let people hijack
 webservers by simply including `{ :; }`.
 
 Fixing a bug after it's been found is good but it doesn't have to be the end.
-Sometimes you think about the bigger picture and see if why it was ever a bug
+Often you should think about the bigger picture and see why it was ever a bug
 in the first place.
 
-I suspected that since bash syntax is very complex the parser is going to be a
-lot of complicated code too. So I did some line counts of various shells to
+I suspected that since bash syntax is very complex, the parser is going to be a
+lot of complicated code too. So I did some line counts of various shells to see
 what the situation is like:
 
                   .c       .h
@@ -24,14 +24,14 @@ what the situation is like:
     plan9 rc:       5989,    327
     execline:       3794,    117
 
-The line count for templeos isn't just counting its shell. It's the linecount
+The line count for TempleOS isn't just counting its shell. It's the linecount
 of the entire system: The operating system kernel, the compiler, the shell, the
-drawing program, the graphic user interface, the 3D flight simulator. **Bash,
+drawing program, the graphical user interface, the 3D flight simulator. **Bash,
 zsh and scsh have more code in them than an entire operating system.**
 
-Shell syntax being overcomplex and ideosyncratic is a long standing problem.
+Shell syntax being overcomplex and ideosyncratic is a long-standing problem.
 Other than shellshock, annoyances happen on a daily basis. Like the time a bug
-in a bash script in steam rm -rf'd peoples home directory [Ran steam. It deleted everything](https://github.com/valvesoftware/steam-for-linux/issues/3671).
+in a bash script in steam rm -rf'd people's home directory [Ran steam. It deleted everything](https://github.com/valvesoftware/steam-for-linux/issues/3671).
 I've had makefiles break a few times because there's a space in my path. It
 took these people four years to fix that [Build failure when builddir contains
 spaces](https://github.com/nodejs/node-gyp/issues/65).
@@ -41,8 +41,8 @@ simplest syntax possible.
 
 # The new command interpreter
 
-So I designed a new shell that aims to be extremely simple, and implemened it
-in a short number of lines of code. Right now it's 780 lines plus 1200 for the
+So I designed a new shell that aims to be extremely simple, and implemented it
+in a small number of lines of code. Right now it's 780 lines plus 1200 for the
 linenoise library. (Technically it is a "command interpreter" not a shell since
 shell implies it implements the POSIX shell standard).
 
@@ -192,13 +192,13 @@ SEE ALSO
 S v0.0.0                          Jun 28, 2017                         S v0.0.0
 ```
 
-The important thing is what's missing: We don't have globs or "splatting" where
+The important thing is what's missing: we don't have globs or "splatting" where
 a variable `$FOO` turns into multiple command line arguments. One token stays
 one token forever. This is a "no surprises" straightforward approach.
 
 We don't even have redirection operators `>` in the shell language. They are
 added as extra programs. So you write `grep foo bar | > out.txt`. `>` is just
-another unix command. `<` is essentially `cat`. A `glob` program is also
+another Unix command. `<` is essentially `cat`. A `glob` program is also
 provided along with *s*, so you write `glob rm *`.
 
 The benefit of this extreme minimalism is that the implementation can be done
@@ -215,7 +215,7 @@ implementing the various operators.
 
 # End
 
-What do you think? I would be very interested in hearing peoples opinions
+What do you think? I would be very interested in hearing people's opinions
 about *s* and the more general idea of stripping programs down to their
 essential parts. Feel free to comment or make 'issues' on the repo if you have
 any criticism, suggestions or just want to discuss.
