@@ -2,7 +2,6 @@
 *~
 *.o
 *.core
-linenoise
 s
 supporting/*
 tags
