@@ -203,7 +203,8 @@ st_accept:
 char **
 read_tokens(region *r, string_port *stream)
 {
-	char tok_buf[TOK_MAX], **tokens, *result;
+	char tok_buf[TOK_MAX+1]; // +1 is for the terminating \0
+	char **tokens, *result;
 	int i = 0, len, should_expand;
 	string_port port;
 
