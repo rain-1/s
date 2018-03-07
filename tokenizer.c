@@ -90,7 +90,7 @@ read_token(char *tok_buf, string_port *stream, int *out_should_expand)
 	do {						\
 		if (len >= TOK_MAX)			\
 			reporterr("token too long");	\
-		tok_buf[len++] = c			\
+		tok_buf[len++] = c;			\
 	} while(0)
 
 	*out_should_expand = EXPAND_DEFAULT;
