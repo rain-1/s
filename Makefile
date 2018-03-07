@@ -37,14 +37,14 @@ supporting: supporting/redir-box supporting/glob
 	@cd supporting; ln -fs redir-box \>
 	@cd supporting; ln -fs redir-box \>\>
 
-linenoise:
+linenoise/linenoise.c:
 	@echo "This project requires the linenoise library!"
 	@echo "git submodule update --init"
 	@exit 1
 
 ${OBJ}: config.mk
 
-$(EXE): linenoise $(OBJ) supporting
+$(EXE): linenoise/linenoise.c $(OBJ) supporting
 	@echo $(CC) -o $@
 	@$(CC) -o $@ $(OBJ) $(LDFLAGS)
 
