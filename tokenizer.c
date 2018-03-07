@@ -88,7 +88,7 @@ read_token(char *tok_buf, string_port *stream, int *out_should_expand)
 /* TOK(c) adds a character c to the buffer, erroring if it went over the limit */
 #define TOK(c)						\
 	do {						\
-		if (len > TOK_MAX)			\
+		if (len >= TOK_MAX)			\
 			reporterr("token too long");	\
 		tok_buf[len++] = c			\
 	} while(0)
