@@ -5,35 +5,35 @@ extern char *argv0;
 extern int debug;
 extern int interactive_mode;
 
-#define reportprint(E, M, ...) {                                                      \
+#define reportprint(E, M, ...) do {                                                   \
 	if (debug)                                                                    \
 		fprintf(stderr, "%s:%d: %s: " M "\n", __FILE__, __LINE__,             \
 		        !E || interactive_mode ? "warning" : "error", ##__VA_ARGS__); \
 	else                                                                          \
 		fprintf(stderr, "%s: " M "\n", argv0, ##__VA_ARGS__);                 \
-}
+} while(0)
 
-#define reporterr(M, ...) {               \
+#define reporterr(M, ...) do {            \
 	reportprint(1, M, ##__VA_ARGS__); \
 	exit(1);                          \
-}
-#define _reporterr(M, ...) {              \
+} while(0)
+#define _reporterr(M, ...) do {           \
 	reportprint(1, M, ##__VA_ARGS__); \
 	_exit(1);                         \
-}
-#define report(M, ...) {                  \
+} while(0)
+#define report(M, ...) do {               \
 	reportprint(0, M, ##__VA_ARGS__); \
 	if (!interactive_mode)            \
 		exit(1);                  \
-}
-#define reportret(R, M, ...) {            \
+} while(0)
+#define reportret(R, M, ...) do {         \
 	reportprint(0, M, ##__VA_ARGS__); \
 	if (!interactive_mode)            \
 		exit(1);                  \
 	else                              \
 		return R;                 \
-}
-#define reportvar(V, M) { \
-	V = M;            \
-	return NULL;      \
-}
+} while(0)
+#define reportvar(V, M) do { \
+	V = M;               \
+	return NULL;         \
+} while(0)
