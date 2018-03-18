@@ -19,11 +19,15 @@ enum {
 	EXPAND_EVAL,
 };
 
-static int is_quote(char c) {
+static int
+is_quote(char c)
+{
 	return c && strchr("\"'`", c);
 }
 
-static int is_eot(char c) {
+static int
+is_eot(char c)
+{
 	return c && strchr(" \t\n\r#", c);
 }
 

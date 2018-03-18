@@ -6,4 +6,4 @@
 extern char tok_buf[TOK_MAX];
 
 void skip_newline(string_port *stream);
-char** read_tokens(region *r, string_port *stream);
+char **read_tokens(region *r, string_port *stream);
