@@ -75,7 +75,7 @@ interpret_pipe(struct AST* n)
 	int fd[2];
 	int f;
 
-	pipe(&fd[0]);
+	pipe(fd);
 
 	f = fork();
 	if (f == -1) {
