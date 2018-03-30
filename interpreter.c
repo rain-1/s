@@ -19,6 +19,7 @@
 #include "util.h"
 
 #include "linenoise.h"
+#include "encodings/utf8.h"
 
 int interactive_mode = 0;
 
@@ -219,7 +220,13 @@ interpreter_loop(FILE *f)
 {
 	string_port port;
 
-	if (!interactive_mode)
+	if (interactive_mode) {
+		linenoiseSetEncodingFunctions(
+			linenoiseUtf8PrevCharLen,
+			linenoiseUtf8NextCharLen,
+			linenoiseUtf8ReadCode);
+	}
+	else
 		port = (string_port){ .kind=STRPORT_FILE, .fptr=f };
 
 	do {

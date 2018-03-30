@@ -5,7 +5,7 @@ include config.mk
 
 EXE = s
 SUP = supporting/\< supporting/\> supporting/\>\> supporting/redir-box supporting/glob
-SRC = $(wildcard *.c) linenoise/linenoise.c
+SRC = $(wildcard *.c) linenoise/linenoise.c linenoise/encodings/utf8.c
 OBJ = $(SRC:.c=.o)
 
 all: options $(EXE)
@@ -44,7 +44,7 @@ linenoise/linenoise.c:
 
 ${OBJ}: config.mk
 
-$(EXE): linenoise/linenoise.c $(OBJ) supporting
+$(EXE): linenoise/linenoise.c linenoise/encodings/utf8.c $(OBJ) supporting
 	@echo $(CC) -o $@
 	@$(CC) -o $@ $(OBJ) $(LDFLAGS)
 
