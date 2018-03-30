@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -x
 if [ ! -e linenoise/linenoise.c ]
 then
