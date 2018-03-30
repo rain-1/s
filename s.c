@@ -18,6 +18,8 @@
 #include "interpreter.h"
 #include "builtins.h"
 
+#define VERSION "0.1"
+
 char *argv0;
 int debug = 0;
 

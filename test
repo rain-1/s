@@ -1,16 +1,15 @@
 #!/bin/bash
-
-PATH="$PATH:../supporting/"
+PATH="$PATH:supporting/"
 
 total=0
 pass=0
 
-for file in scripts/*s; do
+for file in t/scripts/*s; do
 	expect=${file%.s}.txt
-	expect=expect${expect#scripts}
+	expect=t/expect${expect#t/scripts}
 
 	echo -n "testing $file ... "
-	if [[ $(../s "$file" 2>&1 | diff -q "$expect" - 2>&1 ) ]]; then
+	if [[ $(./s "$file" 2>&1 | diff -q "$expect" - 2>&1 ) ]]; then
 		echo fail
 	else
 		echo ok
