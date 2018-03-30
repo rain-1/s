@@ -213,6 +213,13 @@ implementing the various operators.
 * [interpreter.c](https://github.com/rain-1/s/blob/master/interpreter.c)
 * [repo](https://github.com/rain-1/s)
 
+# Changes
+
+What's new with s:
+
+* **s supports russian, japanese, unicode** We have now switched to the yhirose utf8-support branch of [linenoise](https://github.com/yhirose/linenoise/tree/utf8-support).
+* **s does not use makefiles!** No more nasty makefiles. ./make builds it using a super simple shell script.
+
 # End
 
 What do you think? I would be very interested in hearing people's opinions
