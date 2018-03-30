@@ -1,4 +1,4 @@
 [submodule "linenoise"]
 	path = linenoise
-	url = github.com:yhirose/linenoise
+	url = git://github.com/yhirose/linenoise
 	branch = utf8-support
