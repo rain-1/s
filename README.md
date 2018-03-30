@@ -196,6 +196,8 @@ The important thing is what's missing: we don't have globs or "splatting" where
 a variable `$FOO` turns into multiple command line arguments. One token stays
 one token forever. This is a "no surprises" straightforward approach.
 
+Look at how many ways one can screw up passing or copy an array in this [oil shell blog post](http://www.oilshell.org/blog/2016/11/06.html)
+
 We don't even have redirection operators `>` in the shell language. They are
 added as extra programs. So you write `grep foo bar | > out.txt`. `>` is just
 another Unix command. `<` is essentially `cat`. A `glob` program is also
