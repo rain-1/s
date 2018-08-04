@@ -232,4 +232,5 @@ any criticism, suggestions or just want to discuss.
 # See also
 
 * [execline](https://skarnet.org/software/execline/)
+* [oh](https://github.com/michaelmacinnis/oh) + https://www.youtube.com/watch?v=v1m-WEZz46U
 
