@@ -215,6 +215,12 @@ implementing the various operators.
 * [interpreter.c](https://github.com/rain-1/s/blob/master/interpreter.c)
 * [repo](https://github.com/rain-1/s)
 
+# Trying it out
+
+* `git clone --recurse-submodules git@github.com:rain-1/s.git`
+* `./makesfile`
+* `./s`
+
 # Changes
 
 What's new with s:
