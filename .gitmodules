@@ -1,4 +1,3 @@
 [submodule "linenoise"]
 	path = linenoise
-	url = git://github.com/yhirose/linenoise
-	branch = utf8-support
+	url = git://github.com/rain-1/linenoise-mob
