@@ -110,8 +110,8 @@ SYNTAX
              s$ echo 'I am using the "$SHELL" shell'
              I am using the "$SHELL" shell
 
-             s$ echo "you can use \ as well: \" \'"
-             you can use  as well: " '
+             s$ echo "you can use backslash as well: \" \'"
+             you can use backslash as well: " '
 
              $ echo 'person\tbalance\nRichard\t$500\nJohn\t$300'
              person  balance
@@ -237,6 +237,5 @@ any criticism, suggestions or just want to discuss.
 
 # See also
 
-* [execline](https://skarnet.org/software/execline/)
 * [oh](https://github.com/michaelmacinnis/oh) + https://www.youtube.com/watch?v=v1m-WEZz46U
 
