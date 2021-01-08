@@ -1,1 +1,1 @@
-cat expect/cat.txt expect/cat.txt expect/cat.txt
+cat t/expect/cat.txt t/expect/cat.txt t/expect/cat.txt

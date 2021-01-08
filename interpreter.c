@@ -18,8 +18,8 @@
 #include "builtins.h"
 #include "util.h"
 
-#include "linenoise.h"
-#include "encodings/utf8.h"
+//#include "linenoise.h"
+//#include "encodings/utf8.h"
 
 int interactive_mode = 0;
 
@@ -119,10 +119,12 @@ prompt(string_port *port)
 	char *line;
 
 	if (interactive_mode) {
-		if ((line = linenoise(geteuid() == 0 ? "s# " : "s$ "))) {
+		/*
+		if ((line = getline(geteuid() == 0 ? "s# " : "s$ "))) {
 			*port = (string_port){ .kind=STRPORT_CHAR, .text=line, .place=0 };
 			return 0;
 		}
+		*/
 
 		return 1;
 	}
@@ -221,10 +223,12 @@ interpreter_loop(FILE *f)
 	string_port port;
 
 	if (interactive_mode) {
+		/*
 		linenoiseSetEncodingFunctions(
 			linenoiseUtf8PrevCharLen,
 			linenoiseUtf8NextCharLen,
 			linenoiseUtf8ReadCode);
+			*/
 	}
 	else
 		port = (string_port){ .kind=STRPORT_FILE, .fptr=f };
@@ -241,7 +245,7 @@ interpreter_loop(FILE *f)
 
 		if (interactive_mode) {
 			/* TODO: Only add if command was sucessful? */
-			linenoiseHistoryAdd(port.text);
+			// linenoiseHistoryAdd(port.text);
 			efree(port.text);
 		} else {
 			skip_newline(&port);

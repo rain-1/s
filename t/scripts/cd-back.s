@@ -1,3 +1,4 @@
+cd t
 cd test-folder
 cd ..
 cd test-folder
